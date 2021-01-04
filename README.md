@@ -1,4 +1,4 @@
-# Area-metric
+# Area metric code library
 This repo gathers code for computing the stochastic area metric. In Python and Matlab.
 
 ## Get started
@@ -48,7 +48,7 @@ This is all we are going to need to demonstrate the use of the code library in t
 
 Notice:
 
-The datasets needs to be created as Python `lists` and not as numpy arrays.
+The datasets need to be created as Python `lists` and not as numpy arrays.
 
 
 ```python
@@ -56,7 +56,7 @@ d1 = [1,2,3,4,5,6,7,8]
 d2 = [4.5]*8
 ```
 
-We can already use our code to compute the area metric with the following line of code:
+We can already use the code to compute the area metric in just one line:
 
 
 ```python
@@ -99,7 +99,7 @@ am.areaMe(d1,d2)
 
 
 
-The plot will confirm this intuition.
+The plot confirms this intuition.
 
 
 ```python
@@ -146,7 +146,7 @@ D1-D2
 
 
 
-The area metric operator is commutative because it's a metric. So swapping the operands will yield the same answer.
+The infix operator `-` that implements the `area-metric` is commutative as we expected because it is in all respects a true metric. So swapping the operands will yield the same answer.
 
 
 ```python
