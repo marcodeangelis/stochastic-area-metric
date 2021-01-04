@@ -18,6 +18,16 @@ $ source venv/bin/activate
 (venv) $ pip install -r requirements.txt
 ```
 
+On Windows10:
+
+``` bash
+$ python -m venv venv
+
+$ venv\Scripts\activate
+
+(venv) $ pip install -r requirements.txt
+```
+
 ## Let's import the Python module for the *area metric*
 
 
