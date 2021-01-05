@@ -28,6 +28,15 @@ from matplotlib import pyplot
 NUMERIC_TYPES = ('int','float','complex','int8','int16','int32','int64','float16','float32','float64','complex128') # not comprehensive
 
 class Dataset(): # created for code safety
+    '''
+    ∞ --------------------------- ∞
+    Mon Jan 4 18:33 2020 
+    @author: Marco De Angelis 
+    github.com/marcodeangelis 
+    University of Liverpool 
+    GNU General Public License v3.0 
+    ∞ --------------------------- ∞
+    '''
     def __repr__(self): # return
         if len(self)>10:
             a = [str(i) for i in self]
@@ -135,8 +144,14 @@ class Dataset(): # created for code safety
         ax.set_ylabel(ylabel,fontsize=fontsize)
         pass
 
+class ParametricDataset(Dataset): 
+    def __init__(self,distribution,N=100):
+        y=numpy.linspace(0.001,0.999,N)        
+        super().__init__(list(distribution.ppf(y)))
+    def superclass(self):
+        return self.__class__.__bases__[0].__name__
 
-def plot(data1: list, data2: list, ax=None, alpha=0.3, color='gray', figsize=(12,8), marker='.', lw=1, fontsize='16', xlabel='d1, d2', ylabel='Probability', title=None,legend=True, areait=True, savefig=None):
+def plot(data1, data2, ax=None, alpha=0.3, color='gray', figsize=(12,8), marker='.', lw=1, fontsize='16', xlabel='d1, d2', ylabel='Probability', title=None,legend=True, areait=True, savefig=None):
     assert type(data1)==list, 'datasets need to be python list. Support for numpy arrays to follow.'
     assert type(data2)==list, 'datasets need to be python list. Support for numpy arrays to follow.'
     d1, d2 = Dataset(data1), Dataset(data2)

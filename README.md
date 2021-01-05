@@ -1,12 +1,13 @@
 # Area metric code library
 This repo gathers code for computing the stochastic area metric. In Python and Matlab.
 
-For more about the *stochastic area distance* the reader is referred to the following references:
+For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
 
 [1] https://en.wikipedia.org/wiki/Wasserstein_metric
 
 [2] Ramdas, Garcia, Cuturi “On Wasserstein Two Sample Testing and Related Families of Nonparametric Tests” (2015). arXiv:1509.02237. https://arxiv.org/pdf/1509.02237.pdf
 
+*Disclaimer:* This code library has been developed for research, testing, and educational reasons. It is by no means optimized to deal with large datasets. With large datasets we reccommed the use of the `scipy` package. An optimized version of this library is currently under development.
 
 ## Get started
 
@@ -42,7 +43,7 @@ $ venv\Scripts\activate
 import areametric as am
 ```
 
-### We can use the dot notation to access the following:
+### We can use the dot notation to access:
 
 * The class `Dataset`
 * The function `areaMe`
@@ -234,7 +235,7 @@ d1-d2
 
 
 
-We can time the execution.
+Below we time the execution. It takes a small fraction of a second (0.265 s) to compute the distance between two datasets with 1e5 elements. 
 
 
 ```python
@@ -296,7 +297,7 @@ x1-x2
 
 
 
-We can check that the obtained result coincides exactly with the result coming from the `scipy` code library, which is a very good news.
+We can check that the obtained result coincides exactly with the result using the `scipy` code library, which is a very good news.
 
 
 ```python
