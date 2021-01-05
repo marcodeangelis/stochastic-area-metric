@@ -1,4 +1,4 @@
-To cite this code library use the doi: [![DOI](https://zenodo.org/badge/326476924.svg)](https://zenodo.org/badge/latestdoi/326476924)
+[![DOI](https://zenodo.org/badge/326476924.svg)](https://zenodo.org/badge/latestdoi/326476924)
 
 # Area metric code library
 This repo gathers code for computing the stochastic area metric. In Python and Matlab.
