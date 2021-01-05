@@ -47,6 +47,7 @@ import areametric as am
 * The class `Dataset`
 * The function `areaMe`
 * The function `plot`
+* The class `ParametricDataset`
 
 This is all we are going to need to demonstrate the use of the code library in this repository.
 
@@ -170,6 +171,145 @@ D2-D1
 # Datasets of different size
 
 This category of datasets will come soon.
+
+
+```python
+
+```
+# Parametric datasets
+
+Parametric datasets are datasets obtained from parametric distributional models such as the Lognormal distribution.
+
+Let's define a Lognormal distribution using the moments.
+
+
+```python
+lognormal_dist = am.Lognormal(5,1)
+print(lognormal_dist)
+```
+
+    x ~ Lognormal(m=5, s=1)
+
+
+Let's plot this distribution.
+
+
+```python
+lognormal_dist.plot(N=100)
+```
+
+
+![png](fig/output_29_0.png)
+
+
+Now we can use the `Lognormal` distribution to generate two datasets. 
+
+We will use different mean and standard-deviation for the two datasets.
+
+
+```python
+lognormal_dist_1 = am.Lognormal(5,1)
+lognormal_dist_2 = am.Lognormal(7,4)
+```
+
+We can now generate the datasets using the method `sample`. 
+
+We will generate a big number of samples to test the speed of the code.
+
+
+```python
+d1 = am.Dataset(list(lognormal_dist_1.sample(N=100_000)))
+d2 = am.Dataset(list(lognormal_dist_2.sample(N=100_000)))
+```
+
+
+```python
+d1-d2
+```
+
+
+
+
+    2.319762595668186
+
+
+
+We can time the execution.
+
+
+```python
+%timeit d1-d2
+```
+
+    265 ms ± 3.95 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+
+The plot is done using less samples as accuracy is not a priority.
+
+
+```python
+am.plot(list(lognormal_dist_1.sample(N=300)),list(lognormal_dist_2.sample(N=300)))
+```
+
+
+![png](fig/output_38_0.png)
+
+
+The median difference is:
+
+
+```python
+abs(lognormal_dist_1.median() - lognormal_dist_2.median())
+```
+
+
+
+
+    1.1747986164166138
+
+
+
+To get better accuracy we can generate the datasets using directly the inverse cumulative distribution, aka *percent point function* `ppf`. In this way we'll get rid of the sampling error, and we'll get an answer that is deterministic and not as sensitive to the cardinality of the dataset.
+
+We'll use the class `ParametricDataset` to generate the data.
+
+
+```python
+x1 = am.ParametricDataset(lognormal_dist_1, N=300)
+x2 = am.ParametricDataset(lognormal_dist_2, N=300)
+am.plot(x1.to_list(),x2.to_list())
+```
+
+
+![png](fig/output_42_0.png)
+
+
+
+```python
+x1-x2
+```
+
+
+
+
+    2.3319029880776765
+
+
+
+We can check that the obtained result coincides exactly with the result coming from the `scipy` code library, which is a very good news.
+
+
+```python
+from scipy.stats import wasserstein_distance # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wasserstein_distance.html
+wasserstein_distance(x1,x2)
+```
+
+
+
+
+    2.331902988077677
+
+
 
 
 ```python
