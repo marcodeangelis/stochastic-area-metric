@@ -76,6 +76,28 @@ AM_2 = areaMe(d1,d2);
 sprintf('The area metric on different-size datasets is: %g',AM_2)
 
 
+%% Apply bounds to the area metric
+
+% We may be interested in knowing the value of the area metric within some
+% constraints. 
+
+% For example we may want to know the value of the area metric for values
+% greater than 5. 
+
+% We could use a plot to provide a representation of such a query.
+
+% figure(3)
+
+% We provide a simple API to make such request using the main function"
+
+AM_bounded = areaMe(d1,d2,[5,Inf]);
+
+sprintf('The area metric without bounds is: %g',AM_2)
+sprintf('The area metric with bounds [5, Inf] is: %g',AM_bounded)
+
+
+
+
 
 
 
