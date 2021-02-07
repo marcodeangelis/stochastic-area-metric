@@ -83,6 +83,12 @@ class Dataset(): # created for code safety
         else:
             return TypeError('Allowed only between two Dataset types.')
 
+    def __eq__(self,other):
+        for s,o in zip(self,other):
+            if s!=o:
+                return False
+        return True
+
     def to_list(self):
         return self.__data
     def to_array(self):
@@ -276,3 +282,10 @@ def areaMe_env(dataset: list) -> float:  # inputs a list of datasets of differen
             dy = ff[maxf[i]](d0) - ff[minf[i+1]](d1-s)
             AM += dx*dy
     return AM      
+
+def skinny() -> list:
+    return [[1.00, 1.52],[2.68, 2.98],[7.52, 7.67],[7.73, 8.35],[9.44, 9.99],[3.66, 4.58]]
+
+def puffy() -> list:
+    return [[3.5, 6.4],[6.9, 8.8],[6.1, 8.4],[2.8, 6.7],[3.5, 9.7],[6.5, 9.9],[0.15, 3.8],[4.5, 4.9],[7.1, 7.9]]
+ 
