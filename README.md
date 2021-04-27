@@ -3,7 +3,15 @@
 # Area metric code
 This repo gathers code for computing the stochastic area metric. In Python and Matlab.
 
-To cite this repository use the following doi: https://doi.org/10.5281/zenodo.4419644
+To cite this repository use:
+
+> De Angelis M., Sunny J. (2021). *Stochastic area metric*. Github repository. 
+> 
+> https://github.com/marcodeangelis/Stochastic-area-metric/ 
+> 
+> doi: https://doi.org/10.5281/zenodo.4419644
+
+or the BibTex:
 
 ``` bibtex
 @misc{DS2021,
@@ -15,6 +23,8 @@ To cite this repository use the following doi: https://doi.org/10.5281/zenodo.44
   doi = {10.5281/zenodo.4419645},
 }
 ```
+
+
 
 For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
 
