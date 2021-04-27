@@ -28,7 +28,7 @@ For more about the *stochastic area distance* or *Wasserstein distance* the read
 
 Clone the repository using: 
 ``` bash
-$ git clone git@github.com:marcodeangelis/Area-metric.git
+$ git clone git@github.com:marcodeangelis/stochastic-area-metric.git
 ```
 
 On MacOS/Linux:
