@@ -3,6 +3,8 @@
 # Area metric code library
 This repo gathers code for computing the stochastic area metric. In Python and Matlab.
 
+To cite this repository use the following doi: https://doi.org/10.5281/zenodo.4419644
+
 For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
 
 [1] https://en.wikipedia.org/wiki/Wasserstein_metric
