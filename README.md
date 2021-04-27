@@ -1,6 +1,6 @@
 [![DOI](https://zenodo.org/badge/326476924.svg)](https://zenodo.org/badge/latestdoi/326476924)
 
-# Area metric code library
+# Area metric code
 This repo gathers code for computing the stochastic area metric. In Python and Matlab.
 
 To cite this repository use the following doi: https://doi.org/10.5281/zenodo.4419644
