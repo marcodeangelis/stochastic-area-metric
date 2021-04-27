@@ -5,6 +5,7 @@ This repo gathers code for computing the stochastic area metric. In Python and M
 
 To cite this repository use the following doi: https://doi.org/10.5281/zenodo.4419644
 
+``` bibtex
 @misc{DS2021,
   author = {De Angelis, M., Sunny, J.},
   title = {Stochastic area metric},
@@ -13,6 +14,7 @@ To cite this repository use the following doi: https://doi.org/10.5281/zenodo.44
   journal = {GitHub repository},
   doi = {10.5281/zenodo.4419645},
 }
+```
 
 For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
 
