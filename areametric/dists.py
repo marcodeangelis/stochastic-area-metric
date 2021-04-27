@@ -305,7 +305,7 @@ class normal(Distribution):
     
     
 class lognormal(Distribution2): # inputs the parameters
-    def __init__(self,*args,name='x') -> "inputs the parameters":
+    def __init__(self,*args,name='x'): # -> "inputs the parameters"
         self.__scipystats = scipystats.lognorm
         self.name = name 
         i = 0
@@ -330,7 +330,7 @@ class lognormal(Distribution2): # inputs the parameters
     
     
 class Lognormal(Distribution2): 
-    def __init__(self,*args,name='x') -> "inputs the moments (mean and std)":
+    def __init__(self,*args,name='x'): # -> "inputs the moments (mean and std)"
         self.__scipystats = scipystats.lognorm
         self.name = name 
         i = 0
