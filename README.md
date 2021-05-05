@@ -28,9 +28,11 @@ or the BibTex:
 
 For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
 
-[1] https://en.wikipedia.org/wiki/Wasserstein_metric
+[1] Ferson, S. and Oberkampf, W.L., 2009. Validation of imprecise probability models. International Journal of Reliability and Safety, 3(1-3), pp.3-22.
 
-[2] Ramdas, Garcia, Cuturi “On Wasserstein Two Sample Testing and Related Families of Nonparametric Tests” (2015). arXiv:1509.02237. https://arxiv.org/pdf/1509.02237.pdf
+[2] https://en.wikipedia.org/wiki/Wasserstein_metric
+
+[3] https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wasserstein_distance.html
 
 *Disclaimer:* This code library has been developed for research, testing, and educational reasons. It is by no means optimized to deal with large datasets. With large datasets we reccommed the use of the `scipy` package. An optimized version of this library is currently under development.
 
