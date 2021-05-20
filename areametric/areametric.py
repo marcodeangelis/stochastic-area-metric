@@ -26,6 +26,7 @@ from matplotlib import pyplot
 
 
 NUMERIC_TYPES = ('int','float','complex','int8','int16','int32','int64','float16','float32','float64','complex128') # not comprehensive
+ARRAY_TYPE = type(numpy.empty(0))
 
 class Dataset(): # created for code safety
     '''
@@ -65,10 +66,14 @@ class Dataset(): # created for code safety
     def __init__(self,data: list,name='x',bareclass=False):
         if not bareclass: # set this to True if needed for speed
             self.name = name
-            assert type(data)==list, 'The dataset is constructed from a python list of numbers. \nSupport for numpy.array is not yet available.'
-            self.is_numeric(data)
-        self.__data, self.__ordered = list(data.copy()), list(data.copy()) # make two copies of the dataset
-        self.__ordered.sort() 
+            if self.is_iterable(data):    # assert type(data)==list, 'The dataset is constructed from a python list of numbers. \nSupport for numpy.array is not yet available.'
+                for d in data: # this check can be lenghty O(N)
+                    self.is_numeric(d) # throws an error if the iterable does not contain number types
+                self.__data, self.__ordered = list(data.copy()), list(data.copy()) # make two copies of the dataset
+                self.__ordered.sort() 
+            else:
+                self.is_numeric(data) # throws an error if it is not a number
+                self.__data, self.__ordered = list([data]), list([data])
     def __add__(self,other):
         othertype = other.__class__.__name__
         if othertype == 'list':
@@ -83,17 +88,36 @@ class Dataset(): # created for code safety
         else:
             return TypeError('Allowed only between two Dataset types.')
 
+    def __eq__(self,other):
+        for s,o in zip(self,other):
+            if s!=o:
+                return False
+        return True
+
     def to_list(self):
         return self.__data
     def to_array(self):
         return numpy.array(self.__data)
     
     @staticmethod
-    def is_numeric(data):
-        for v in data:
-            if v.__class__.__name__ not in NUMERIC_TYPES:
-                print(f"Numeric types currently supported {NUMERIC_TYPES}")
-                raise TypeError('The elements in the list must be numeric.')
+    def is_iterable(data) -> bool:
+        try:
+            for v in data:
+                return True # if iterable exit at first iteration O(1), else except O(1).
+        except TypeError as e:
+            number_type = data.__class__.__name__
+            expected_error = f"'{number_type}' object is not iterable"
+            if str(e) == expected_error:
+                print(f'{e}. Convertion to the single element list: [{data}]')
+            else:
+                print('something went wrong.') # this should never be reached.
+            return False
+
+    @staticmethod
+    def is_numeric(x):
+        if x.__class__.__name__ not in NUMERIC_TYPES:
+            print(f"Numeric types currently supported {NUMERIC_TYPES}")
+            raise TypeError('The elements in the list must be numeric.')
         return None
     
     def ecdf(self) -> (list, list):
@@ -202,10 +226,10 @@ def areaMe(data1: list, data2: list) -> float: # inputs lists of doubles # numpy
     When datasets have same size the code is fastest.
 
     '''
-    # d1,d2 = data1.copy(), data2.copy() # avoid catastrophic memory leaks
-    assert type(data1)==list, 'datasets need to be python list. Support for numpy arrays to follow.'
-    assert type(data2)==list, 'datasets need to be python list. Support for numpy arrays to follow.'
-    d1, d2 = Dataset(data1), Dataset(data2) # also checks dataset is numeric
+    # d1,d2 = data1.copy(), data2.copy() # avoid catastrophic memory leaks due to sort in place
+    # assert type(data1)==list, 'datasets need to be python list. Support for numpy arrays to follow.'
+    # assert type(data2)==list, 'datasets need to be python list. Support for numpy arrays to follow.'
+    d1, d2 = Dataset(data1), Dataset(data2) # also checks dataset is numeric and iterable
 
     n1 = len(d1)
     n2 = len(d2)
@@ -276,3 +300,10 @@ def areaMe_env(dataset: list) -> float:  # inputs a list of datasets of differen
             dy = ff[maxf[i]](d0) - ff[minf[i+1]](d1-s)
             AM += dx*dy
     return AM      
+
+def skinny() -> list:
+    return [[1.00, 1.52],[2.68, 2.98],[7.52, 7.67],[7.73, 8.35],[9.44, 9.99],[3.66, 4.58]]
+
+def puffy() -> list:
+    return [[3.5, 6.4],[6.9, 8.8],[6.1, 8.4],[2.8, 6.7],[3.5, 9.7],[6.5, 9.9],[0.15, 3.8],[4.5, 4.9],[7.1, 7.9]]
+ 
