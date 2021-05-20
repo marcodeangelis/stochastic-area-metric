@@ -1,7 +1,7 @@
 # Area metric code
 
 [![DOI](https://zenodo.org/badge/326476924.svg)](https://zenodo.org/badge/latestdoi/326476924)
-![Build Status](https://github.com/marcodeangelis/Stochastic-area-metric/workflows/CI/badge.svg)
+![Build Status](https://github.com/marcodeangelis/Stochastic-area-metric/actions/workflows/ci.yml/badge.svg)
 
 This repository gathers code for computing the stochastic area metric, in Python.
 
