@@ -1,4 +1,4 @@
-# Area metric code
+# The stochastic area metric
 
 [![DOI](https://zenodo.org/badge/326476924.svg)](https://zenodo.org/badge/latestdoi/326476924)
 ![Build Status](https://github.com/marcodeangelis/Stochastic-area-metric/actions/workflows/ci.yml/badge.svg)
@@ -14,7 +14,7 @@ To cite this repository use:
 > 
 > doi: https://doi.org/10.5281/zenodo.4419644
 
-or the BibTex:
+BibTex:
 
 ``` bibtex
 @misc{DS2021,
@@ -27,7 +27,10 @@ or the BibTex:
 }
 ```
 
+## Acknowledgements
+We would like to thank Scott Ferson, Ander Gray and Enrique Miralles-Dolz for the inspiration, the excitement and the intense discussion on this topic. This work was inspired by Prof Ferson's talk at *BayesDays* (http://riskinstitute.uk/BayesDays/), which was a series of seminars on Bayesian analysis that happened at the University of Liverpool's Institute for Risk and Uncertainty in 2017. 
 
+## References
 
 For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
 
