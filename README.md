@@ -8,7 +8,7 @@ This repository gathers code for computing the stochastic area metric, in Python
 
 To cite this repository use:
 
-> De Angelis M., Sunny J. (2021). *Stochastic area metric*. Github repository. 
+> De Angelis M., Sunny J. (2021). *The stochastic area metric*. Github repository. 
 > 
 > https://github.com/marcodeangelis/Stochastic-area-metric/ 
 > 
