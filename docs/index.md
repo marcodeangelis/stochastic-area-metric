@@ -32,4 +32,4 @@ Use the `plot` function to visualise the results in a single plot.
 am.plot(d1,d2)
 ```
 
-![png](fig/output_9_0.png)
+![png](../fig/output_9_0.png)
