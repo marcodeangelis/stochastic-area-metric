@@ -103,9 +103,9 @@ We can already use the code to compute the area metric in just one line:
 
 ```python
 print(am.areaMe(d1,d2))
-```
 
-    2.0
+#     2.0
+```
 
 
 We can then use the `plot` function to visualise the results in a single plot.
@@ -132,12 +132,10 @@ We would expect this difference to be equal to `4.0` as these two datasets are e
 
 ```python
 am.areaMe(d1,d2)
+
+#    4.0
 ```
 
-
-
-
-    4.0
 
 
 
@@ -179,26 +177,20 @@ And we can compute the area metric using the subtraction operator `-`.
 
 ```python
 D1-D2
+
+#     2.0
 ```
 
 
 
-
-    2.0
-
-
-
-The infix operator `-` that implements the `area-metric` is commutative as we expected because it is in all respects a true metric. So swapping the operands will yield the same answer.
+The infix operator `-` can be used as above, and is thus equivalent to `areaMe(D1,D2)`,  which also implies `D1-D2 = D2-D1`. So swapping the operands will yield the same answer.
 
 
 ```python
 D2-D1
+
+#     2.0
 ```
-
-
-
-
-    2.0
 
 
 
@@ -220,9 +212,9 @@ Let's define a Lognormal distribution using the moments.
 ```python
 lognormal_dist = am.Lognormal(5,1)
 print(lognormal_dist)
-```
 
-    x ~ Lognormal(m=5, s=1)
+#     x ~ Lognormal(m=5, s=1)
+```
 
 
 Let's plot this distribution.
@@ -259,23 +251,18 @@ d2 = am.Dataset(list(lognormal_dist_2.sample(N=100_000)))
 
 ```python
 d1-d2
+
+#     2.319762595668186
 ```
-
-
-
-
-    2.319762595668186
-
-
 
 Below we time the execution. It takes a small fraction of a second (0.265 s) to compute the distance between two datasets with 1e5 elements. 
 
 
 ```python
 %timeit d1-d2
-```
 
-    265 ms ± 3.95 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+# 265 ms ± 3.95 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
 
 
 The plot is done using less samples as accuracy is not a priority.
@@ -294,12 +281,9 @@ The median difference is:
 
 ```python
 abs(lognormal_dist_1.median() - lognormal_dist_2.median())
+
+#    1.1747986164166138
 ```
-
-
-
-
-    1.1747986164166138
 
 
 
@@ -321,27 +305,25 @@ am.plot(x1.to_list(),x2.to_list())
 
 ```python
 x1-x2
+
+# 2.3319029880776765
 ```
 
 
 
-
-    2.3319029880776765
-
-
-
-We can check that the obtained result coincides exactly with the result using the `scipy` code library, which is a very good news.
+We can check that the obtained result coincides exactly with the result from the `scipy` code library. Scipy can thus be used as a test bed.
 
 
 ```python
 from scipy.stats import wasserstein_distance # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wasserstein_distance.html
 wasserstein_distance(x1,x2)
+
+#     2.331902988077677
 ```
 
 
 
 
-    2.331902988077677
 
 
 
