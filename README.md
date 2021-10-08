@@ -28,7 +28,7 @@ BibTex:
 ```
 
 ## Acknowledgements
-We would like to thank Scott Ferson, Ander Gray, Enrique Miralles-Dolz, and Dominic Calleja for the good vibes. This work was inspired by Prof Ferson's talk at *BayesDays* (http://riskinstitute.uk/BayesDays/), at the University of Liverpool in 2017. 
+We would like to thank Scott Ferson, Ander Gray, Enrique Miralles-Dolz, and Dominic Calleja for the good vibes.  
 
 ## References
 
