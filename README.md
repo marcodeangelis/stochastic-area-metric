@@ -4,9 +4,9 @@
 ![Build Status](https://github.com/marcodeangelis/Stochastic-area-metric/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/marcodeangelis/Stochastic-area-metric/branch/main/graph/badge.svg?token=U5CGV3D7VN)](https://codecov.io/gh/marcodeangelis/Stochastic-area-metric)
 
-This repository gathers code for computing the stochastic area metric, in Python.
+Code for computing the stochastic area metric, in Python.
 
-To cite this repository use:
+To cite use:
 
 > De Angelis M., Sunny J. (2021). *The stochastic area metric*. Github repository. 
 > 
@@ -32,7 +32,7 @@ We would like to thank Scott Ferson, Ander Gray, Enrique Miralles-Dolz, and Domi
 
 ## References
 
-For more about the *stochastic area distance* or *Wasserstein distance* the reader is referred to the following references:
+For more about the *stochastic area metric* or *Wasserstein distance* the reader is referred to the following references:
 
 [1] Ferson, S. and Oberkampf, W.L., 2009. Validation of imprecise probability models. International Journal of Reliability and Safety, 3(1-3), pp.3-22.
 
@@ -47,6 +47,7 @@ For more about the *stochastic area distance* or *Wasserstein distance* the read
 Clone the repository using: 
 ``` bash
 $ git clone git@github.com:marcodeangelis/stochastic-area-metric.git
+$ cd stochastic-area-metric
 ```
 
 On MacOS/Linux:
@@ -69,14 +70,14 @@ $ venv\Scripts\activate
 (venv) $ pip install -r requirements.txt
 ```
 
-## Let's import the Python module for the *area metric*
+## Importing the module
 
 
 ```python
 import areametric as am
 ```
 
-### We can use the dot notation to access:
+### We can use the attribute notation to access:
 
 * The class `Dataset`
 * The function `areaMe`
