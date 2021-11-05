@@ -163,9 +163,9 @@ def pseudoinverse_(x: DATASET_TYPE,u: Union[float,VECTOR_TYPE]) -> Union[float, 
     d = dataset_parser(x) # sorting of data happens in the Dataset constructor
     n=len(d)
     x,_= ecdf_(d)
+    u = numpy.asarray(u,dtype=float) # if cannot cast to dtype=float return the numpy error
     one = u==1
     if is_sized(u):
-        u = numpy.asarray(u,dtype=float) # if cannot cast to dtype=float return the numpy error
         index = numpy.asarray(n*u,dtype=int)+1
         if any(one):
             index[one] = index[one]-1
