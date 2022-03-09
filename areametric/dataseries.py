@@ -102,7 +102,7 @@ def value_sorted(x:ndarray[float],i:ndarray[int]): # return the ndarray `x` with
     x_sorted_flat = empty((prod(shape0,dtype=int),))
     for j in range(prod(shape0[1:],dtype=int)): # loop over all elements except the rep dimension
         start,end = int(j*rep), int((j+1)*rep)
-        x_sorted_flat[start:end]=xt.flatten()[start:end][it.flatten()[start:end]] # <- sort happens here 
+        x_sorted_flat[start:end]=xt.flatten()[start:end][it.flatten()[start:end]] # <- sort happens here (sort algorithm not deployed here)
     premut_rep_back = [permut[-1]]+permut[:-1] # permute back rep dimension to occupy the first
     x_sorted_reshape = x_sorted_flat.reshape(shape1) # from flat back to shape1
     x_sorted_reshape_transpose = transpose(x_sorted_reshape,premut_rep_back) # from shape1 back to shape0
@@ -110,7 +110,7 @@ def value_sorted(x:ndarray[float],i:ndarray[int]): # return the ndarray `x` with
 
 def show(x:DataSeries, n:int=10) -> str:
     len_x = len(x)
-    xv = x.value
+    xv = x.value 
     if len_x > 2*n: 
         a,b = [f'{xi}' for xi in xv[:n]],[f'{xi}' for xi in xv[-n:]]
         return '\n'.join(a+['...']+b)
@@ -158,7 +158,7 @@ class DataSeries(object):
                     warnings.warn('There are more dimensions than repetitions. The flag `shallow` is set to True so, the value array will be automatically transposed.')
                     self.__value = transpose(self.__value)
         self.__shape = self.__value.shape
-        self.__index = argsort(self.__value,axis=0)
+        self.__index = argsort(self.__value,axis=0) # perform sort
         if len(self.__shape)==1: self.__dim = (1,)
         else: self.__dim = tuple([self.__shape[j] for j in range(1,len(self.__shape))])
         self.__length = self.__shape[0]
