@@ -22,7 +22,7 @@ import numpy
 from numpy import (ndarray, concatenate, linspace, diff, argmax, argmin)
 
 from .dataseries import (dataseries, mixture)
-from .methods import (ecdf, ecdf_p, quantile_function)
+from .methods import (ecdf, ecdf_p, inverse_quantile_function, quantile_function)
 
 # from areametric.dataset import dataset_parser, Dataset, ecdf_, ecdf, DATASET_TYPE, pseudoinverse
 
@@ -45,18 +45,20 @@ def areaMe(x_: ndarray, y_: ndarray) -> ndarray: # inputs lists of doubles # num
     '''
     x, y = dataseries(x_), dataseries(y_) 
     n1, n2 = len(x), len(y)
-    q1_, q2_ = quantile_function(x), quantile_function(y)
+    n = n1 if n1>n2 else n2
+    qx, qy = quantile_function(x), quantile_function(y)
+    iqx, iqy = inverse_quantile_function(x,side='right'), inverse_quantile_function(y,side='right')
     if (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
     elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
-    else: # 
+    else: # datasets of different size 
         xy = x + y # concatenate the two dataseries
         xysv = xy.value_sorted 
-        u = abs(q1_(xysv) - q2_(xysv))
+        u = abs(iqx(xysv) - iqy(xysv))
         v = diff(xysv)
-        return u[:-1]*v[:-1]
+        return sum(u[:-1]*v)
     p_= concatenate(([0.],p))
     pm = (p+p_[:-1])/2 # mid height of each step
-    return sum(abs(q1_(pm) - q2_(pm)) / n1)
+    return sum(abs(qx(pm) - qy(pm)) / n)
         
 
 # def areaMe(data1: DATASET_TYPE, data2: DATASET_TYPE) -> float: # inputs lists of doubles # numpy array are not currently supported.
