@@ -1,40 +1,41 @@
 '''
     %---------------------------------------#
-    Thu Oct 15 22:15:39 2020
-    @author: Marco De Angelis & Jaleena Sunny
+    Created Oct 2020
+     Edited Mar 2022
+    Marco De Angelis & Jaleena Sunny
     github.com/marcodeangelis
     University of Liverpool
     GNU General Public License v3.0
     %---------------------------------------#
 
-    Fast code for area metric. This version works with data sets of different sizes.
+    Computes the area metric between two dataseries or of a mixture.
+    
+    This version works with data sets of different sizes.
 
     When datasets have same size the code is fastest.
 
-    Updated version of the AM for an envelope of datasets.
-
-    % --- About GNU General Public License v3.0 --- #
-    Permissions of this strong copyleft license are conditioned on making available complete source code 
-    of licensed works and modifications, which include larger works using a licensed work, under the same license. 
-    Copyright and license notices must be preserved. Contributors provide an express grant of patent rights.
 '''
 from __future__ import annotations
 
 import numpy
 
-from numpy import argsort, linspace, argmax, argmin
+from numpy import (ndarray, concatenate, linspace, diff, argmax, argmin)
 
-from areametric.dataset import dataset_parser, Dataset, ecdf_, ecdf, DATASET_TYPE, pseudoinverse
+from .dataseries import (dataseries, mixture)
+from .methods import (ecdf, ecdf_p, quantile_function)
 
-def areaMe(data1: DATASET_TYPE, data2: DATASET_TYPE) -> float: # inputs lists of doubles # numpy array are not currently supported.
+# from areametric.dataset import dataset_parser, Dataset, ecdf_, ecdf, DATASET_TYPE, pseudoinverse
+
+
+def areaMe(x_: ndarray, y_: ndarray) -> ndarray: # inputs lists of doubles # numpy array are not currently supported.
     '''
     ∞ --------------------------- ∞
-    cre: Wed Oct 7 23:41 2020 
-    edi: Wed Jun 23 11:20 2021
+    cre: Wed Oct 7 2020 
+    edi: Tue Mar 8 2022
     author: Marco De Angelis 
     github.com/marcodeangelis 
     University of Liverpool 
-    GNU General Public License v3.0 
+    MIT
     ∞ --------------------------- ∞
 
     Works also on datasets of different sizes.
@@ -42,29 +43,61 @@ def areaMe(data1: DATASET_TYPE, data2: DATASET_TYPE) -> float: # inputs lists of
     When datasets have same size the code is fastest.
 
     '''
-    d1, d2 = dataset_parser(data1), dataset_parser(data2) 
+    x, y = dataseries(x_), dataseries(y_) 
+    n1, n2 = len(x), len(y)
+    q1_, q2_ = quantile_function(x), quantile_function(y)
+    if (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
+    elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
+    else: # 
+        xy = x + y # concatenate the two dataseries
+        xysv = xy.value_sorted 
+        u = abs(q1_(xysv) - q2_(xysv))
+        v = diff(xysv)
+        return u[:-1]*v[:-1]
+    p_= concatenate(([0.],p))
+    pm = (p+p_[:-1])/2 # mid height of each step
+    return sum(abs(q1_(pm) - q2_(pm)) / n1)
+        
 
-    n1, n2 = len(d1), len(d2)
-    f1_, f2_ = pseudoinverse(d1), pseudoinverse(d2)
-    if n1==n2:
-        n = n1 # = n2
-        p = numpy.linspace(0,1,n)
-        return sum(abs(f1_(p)-f2_(p))/n)
-    else: # n1>n2
-        # AM = 0
-        # f1, f2 = d1.interp_f(), d2.interp_f()
-        d12 = d1 + d2 
-        # s12 = d12.index()
-        v = d12.value()[d12.index()]
-        y = abs(f1_(v)-f2_(v))
-        x = numpy.diff(v)
-        return x[:-1]*y[:-1]
-    #     for i in range(n1+n2-1):
-    #         v = d12[s12[i]] # v = (d12[s12[i]]+d12[s12[i+1]])/2
-    #         y = abs(f1(v)-f2(v))
-    #         x = d12[s12[i+1]]-d12[s12[i]]
-    #         AM += x*y
-    # return AM
+# def areaMe(data1: DATASET_TYPE, data2: DATASET_TYPE) -> float: # inputs lists of doubles # numpy array are not currently supported.
+#     '''
+#     ∞ --------------------------- ∞
+#     cre: Wed Oct 7 23:41 2020 
+#     edi: Wed Jun 23 11:20 2021
+#     author: Marco De Angelis 
+#     github.com/marcodeangelis 
+#     University of Liverpool 
+#     GNU General Public License v3.0 
+#     ∞ --------------------------- ∞
+
+#     Works also on datasets of different sizes.
+
+#     When datasets have same size the code is fastest.
+
+#     '''
+#     d1, d2 = dataset_parser(data1), dataset_parser(data2) 
+
+#     n1, n2 = len(d1), len(d2)
+#     f1_, f2_ = pseudoinverse(d1), pseudoinverse(d2)
+#     if n1==n2:
+#         n = n1 # = n2
+#         p = numpy.linspace(0,1,n)
+#         return sum(abs(f1_(p)-f2_(p))/n)
+#     else: # n1>n2
+#         # AM = 0
+#         # f1, f2 = d1.interp_f(), d2.interp_f()
+#         d12 = d1 + d2 
+#         # s12 = d12.index()
+#         v = d12.value()[d12.index()]
+#         y = abs(f1_(v)-f2_(v))
+#         x = numpy.diff(v)
+#         return x[:-1]*y[:-1]
+#     #     for i in range(n1+n2-1):
+#     #         v = d12[s12[i]] # v = (d12[s12[i]]+d12[s12[i+1]])/2
+#     #         y = abs(f1(v)-f2(v))
+#     #         x = d12[s12[i+1]]-d12[s12[i]]
+#     #         AM += x*y
+#     # return AM
 
 
 # NUMERIC_TYPES = ('int','float','complex','int8','int16','int32','int64','float16','float32','float64','complex128') # not comprehensive
@@ -205,7 +238,7 @@ def areaMe(data1: DATASET_TYPE, data2: DATASET_TYPE) -> float: # inputs lists of
 #         return self.__class__.__bases__[0].__name__
 
 
-# def areaMe(data1: list, data2: list) -> float: # inputs lists of doubles # numpy array are not currently supported.
+# def areaMe_(data1: list, data2: list) -> float: # inputs lists of doubles # numpy array are not currently supported.
 #     '''
 #     ∞ --------------------------- ∞
 #     Wed Oct 7 23:41:25 2020 
@@ -295,9 +328,3 @@ def areaMe_env(dataset: list) -> float:  # inputs a list of datasets of differen
             AM += dx*dy
     return AM      
 
-def skinny() -> list:
-    return [[1.00, 1.52],[2.68, 2.98],[7.52, 7.67],[7.73, 8.35],[9.44, 9.99],[3.66, 4.58]]
-
-def puffy() -> list:
-    return [[3.5, 6.4],[6.9, 8.8],[6.1, 8.4],[2.8, 6.7],[3.5, 9.7],[6.5, 9.9],[0.15, 3.8],[4.5, 4.9],[7.1, 7.9]]
- 
