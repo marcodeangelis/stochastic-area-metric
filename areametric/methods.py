@@ -146,7 +146,7 @@ def quantile_function(x: ndarray) -> Callable[[ndarray]]: # `Generalised inverse
     def fun(u: ndarray): return quantile_value(x,u)
     return fun
 
-def inverse_quantile_algorithm(x:ndarray, q:ndarray, p:ndarray): # core inverse-quantile algorithm for 1d-array data, i.e. data of dimension (n,).
+def inverse_quantile_algorithm(x:ndarray, q:ndarray, p:ndarray, side='left'): # core inverse-quantile algorithm for 1d-array data, i.e. data of dimension (n,).
     n=len(x) # x must be sorted, but don't sort it in here!
     if (len(x.shape)!=1): raise ValueError(f'Array shape must be ({n},) and not {x.shape}.')
     if is_sized(q):
@@ -155,13 +155,13 @@ def inverse_quantile_algorithm(x:ndarray, q:ndarray, p:ndarray): # core inverse-
         qx = repmat(q,n,1).T
         xq = repmat(x,m,1)
         i = repmat(arange(n),m,1)
-        b = qx > xq # qx and xq have the same shape so comparison can take place
+        b = qx > xq if side=='left' else qx >= xq # qx and xq have the same shape so comparison can take place
         return asarray([p[k] for k in numpy_max((i+1) * b, axis=1)],dtype=float)
-    b = q > x
+    b = q > x if side=='left' else q >= x
     i = arange(len(x))
     return p[max((i+1) * b)]
 
-def quantile_tensor(x:ndarray[float],i:ndarray[int],q:ndarray[float],p:ndarray[float]): 
+def quantile_tensor(x:ndarray[float],i:ndarray[int],q:ndarray[float],p:ndarray[float],side='left'): 
     q = asarray(q,dtype=float)
     shapex_mut = list(x.shape) # make shape of x mutable
     rep = shapex_mut[0] # first dimension is the number of repetitions
@@ -178,13 +178,13 @@ def quantile_tensor(x:ndarray[float],i:ndarray[int],q:ndarray[float],p:ndarray[f
         start_x,end_x = int(j*rep), int((j+1)*rep)
         start_q,end_q = int(j*qns), int((j+1)*qns)
         x_sorted_flat = xt.flatten()[start_x:end_x][it.flatten()[start_x:end_x]] # <- sort happens here (sort algorithm not deployed here)
-        pq_sorted_flat[start_q:end_q] = inverse_quantile_algorithm(x_sorted_flat,q,p) # here deploy quantile algorithm
+        pq_sorted_flat[start_q:end_q] = inverse_quantile_algorithm(x_sorted_flat,q,p,side=side) # here deploy quantile algorithm
     premut_rep_back = [permut[-1]]+permut[:-1] # permute back rep dimension to occupy the first
     pq_sorted_reshape = pq_sorted_flat.reshape(shape1) # from flat back to shape1
     pq_sorted_reshape_transpose = transpose(pq_sorted_reshape,premut_rep_back) # from shape1 back to shape0
     return pq_sorted_reshape_transpose # if values are already sorted (increasing) this must return x
 
-def quantile_tensor_float(x:ndarray[float],i:ndarray[int],q:float,p:ndarray[float]): 
+def quantile_tensor_float(x:ndarray[float],i:ndarray[int],q:float,p:ndarray[float],side='left'): 
     shape_x = x.shape
     rep = shape_x[0]
     shape_o = shape_x[1:]
@@ -198,19 +198,19 @@ def quantile_tensor_float(x:ndarray[float],i:ndarray[int],q:float,p:ndarray[floa
     for j in range(m): # loop over all elements except the first dimension
         start_x,end_x = int(j*rep), int((j+1)*rep)
         x_sorted_flat = xt.flatten()[start_x:end_x][it.flatten()[start_x:end_x]] # <- sort happens here (sort algorithm not deployed here)
-        pq_sorted_flat[j] = inverse_quantile_algorithm(x_sorted_flat,q,p) # here deploy quantile algorithm
+        pq_sorted_flat[j] = inverse_quantile_algorithm(x_sorted_flat,q,p,side=side) # here deploy quantile algorithm
     premut_rep_back = [permut[-1]]+permut[:-1] # permute back rep dimension to occupy the first
     pq_sorted_reshape = pq_sorted_flat.reshape(shape_o) # from flat back to shape1
     return pq_sorted_reshape # if values are already sorted (increasing) this must return x
 
-def inverse_quantile_value(x_:Union[ndarray,DataSeries], q:Union[ndarray,float]) -> Union[ndarray,float]:
+def inverse_quantile_value(x_:Union[ndarray,DataSeries], q:Union[ndarray,float],side='left') -> Union[ndarray,float]:
     x = dataseries(x_) # sorting of data happens in the DataSeries constructor # sort algorithm is invoked here, but only if x is not a DataSeries.
     if x.__class__.__name__ == 'Mixture': 
         print('TODO: implement ecdf for mixtures.')
         raise ValueError
     p = ecdf_p_(x) # vector to be indexed by k
-    if is_sized(q): return quantile_tensor(x.value,x.index,q,p) # array of indices
-    else: return quantile_tensor_float(x.value,x.index,q,p) # array of indices
+    if is_sized(q): return quantile_tensor(x.value,x.index,q,p,side=side) # array of indices
+    else: return quantile_tensor_float(x.value,x.index,q,p,side=side) # array of indices
     
     
     # if is_sized(q): # must iterate over dataseries dimensions
@@ -226,8 +226,8 @@ def inverse_quantile_value(x_:Union[ndarray,DataSeries], q:Union[ndarray,float])
     # i=arange(len(x))
     # return p[max((i+1)*b)]
 
-def inverse_quantile_function(x:ndarray) -> Callable[[ndarray]]:
-    def fun(q:ndarray): return inverse_quantile_value(x,q)
+def inverse_quantile_function(x:ndarray,side='left') -> Callable[[ndarray]]:
+    def fun(q:ndarray): return inverse_quantile_value(x,q,side=side)
     return fun
     
 # def pseudoinverse_(x: DATASET_TYPE,u: Union[float,VECTOR_TYPE]) -> Union[float, numpy.array]:
