@@ -19,6 +19,7 @@
 
 '''
 from __future__ import annotations
+from typing import Union
 
 import numpy
 
@@ -44,9 +45,9 @@ def areame_algorithm(x_: ndarray, y_: ndarray) -> float: # inputs lists of doubl
 
     Computes the area metric between two dataseries of dimension 1. A dataseries of dimension 1 is a 1d-array.
 
-    Works also on datasets of different sizes.
+    Works also on samples of different sizes.
 
-    When datasets have same size or one size is a multiple of the other the code is fastest.
+    When samples have same size or one size is a multiple of the other the code is fastest.
 
     Inputs
     ------
@@ -65,17 +66,21 @@ def areame_algorithm(x_: ndarray, y_: ndarray) -> float: # inputs lists of doubl
     n = n1 if n1>n2 else n2
     qx, qy = quantile_function(x), quantile_function(y)
     iqx, iqy = inverse_quantile_function(x,side='right'), inverse_quantile_function(y,side='right')
-    if (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
-    elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
-    else: # datasets of different size 
+    if ((n2>n1) & (n2%n1!=0)) | ((n1<n2) & (n1%n2!=0)): # slow branch
         xy = x + y # concatenate the two dataseries # sort happens here again
         xysv = xy.value_sorted # get data after sorting
         u = abs(iqx(xysv) - iqy(xysv)) # steps height
         v = diff(xysv) # steps width
-        return sum(u[:-1]*v) # area chunks
+        return sum(u[:-1]*v) # sum all area chunks and terminate
+    elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
+    elif (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
     p_= concatenate(([0.],p)) 
     pm = (p+p_[:-1])/2 # mid height of each step
     return sum(abs(qx(pm) - qy(pm)) / n)
+
+    # if (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
+    # elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
+    # else: # datasets of different size 
         
 def areame_tensor(x:ndarray,y:ndarray) -> ndarray: # x and y must have the same dimension (not shape!)
     """
@@ -108,11 +113,26 @@ def areame_tensor(x:ndarray,y:ndarray) -> ndarray: # x and y must have the same 
     areame_sorted_reshape = areame_sorted_flat.reshape(dim_xy) # from flat back to shape1
     return areame_sorted_reshape # if values are already sorted (increasing) this must return x
 
-def areaMe(x_:ndarray,y_:ndarray):
+def areaMe(x_:ndarray,y_:ndarray) -> Union[ndarray,float]:
     x, y = dataseries(x_), dataseries(y_) 
     if is_compatible(x,y)==False: raise TypeError('The area metric can only be computed between compatible data structures.\nCompatible ds are ds with the same dimension.')
     if x.tabular: return areame_tensor(x,y) # or y.tabular==True
     else: return areame_algorithm(x,y)
+
+def area_chunks(x_:ndarray,y_:ndarray) -> ndarray: # not yet tensor
+    x, y = dataseries(x_), dataseries(y_) 
+    iqx, iqy = inverse_quantile_function(x,side='right'), inverse_quantile_function(y,side='right')
+    xy = x + y # concatenate the two dataseries # sort happens here again
+    xysv = xy.value_sorted # get data after sorting
+    u = abs(iqx(xysv) - iqy(xysv)) # steps height
+    v = diff(xysv) # steps width
+    return u[:-1]*v # area chunks
+
+
+
+
+
+
 
 
 def areaMe_env(dataset: list) -> float:  # inputs a list of datasets of different sizes (list of lists)
