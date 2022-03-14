@@ -12,7 +12,7 @@ from typing import Sequence, Sized, Union, Iterable, Optional, Any, Callable, Tu
 import warnings
 
 import numpy
-from numpy import (ndarray,asarray,linspace,concatenate,arange,transpose,prod,empty)
+from numpy import (ndarray,asarray,linspace,concatenate,arange,transpose,prod,empty,floor,ceil)
 from numpy.matlib import repmat
 from numpy import max as numpy_max
 
@@ -38,8 +38,8 @@ def ecdf(x_:ndarray, w_:ndarray=None) -> ndarray:
         raise ValueError
     n = len(x) 
     if w_ is None: p = linspace(1/n,1,n) 
-    else: p = asarray(w_,dtype=float)*linspace(1/n,1,n) # w must add up to one
-    return x.value_sorted, p
+    else: p = asarray(w_,dtype=float)*linspace(1/n,1,n) # w must add up to one # TODO: check normality of w.
+    return x.value_sorted, p 
 
 def ecdf_p(x_:ndarray, w_:ndarray=None) -> ndarray:   # more efficient than `ecdf` if only p values are needed
     x = dataseries(x_)
@@ -48,7 +48,7 @@ def ecdf_p(x_:ndarray, w_:ndarray=None) -> ndarray:   # more efficient than `ecd
         raise ValueError
     n = len(x) 
     if w_ is None: p = linspace(1/n,1,n) 
-    else: p = asarray(w_,dtype=float)*linspace(1/n,1,n) # w must add up to one
+    else: p = asarray(w_,dtype=float)*linspace(1/n,1,n) # w must add up to one # TODO: check normality of w.
     return p
 
     # d = dataset_parser(x)
@@ -68,7 +68,7 @@ def ecdf_(x_:ndarray, w_:ndarray=None) -> ndarray:
         raise ValueError
     n=len(x)
     if w_ is None: pval = linspace(1/n,1,n)
-    else: pval = asarray(w_,dtype=float) * linspace(1/n,1,n) # w must add up to one
+    else: pval = asarray(w_,dtype=float) * linspace(1/n,1,n) # w must add up to one # TODO: check normality of w.
     x_value_sorted = x.value_sorted
     return concatenate(([x_value_sorted[0]],x_value_sorted)), concatenate(([0.],pval))
 
@@ -79,7 +79,7 @@ def ecdf_p_(x_:ndarray, w_:ndarray=None) -> ndarray: # more efficient than `ecdf
         raise ValueError
     n=len(x)
     if w_ is None: pval = linspace(1/n,1,n)
-    else: pval = asarray(w_,dtype=float) * linspace(1/n,1,n) # w must add up to one
+    else: pval = asarray(w_,dtype=float) * linspace(1/n,1,n) # w must add up to one # TODO: check normality of w.
     return concatenate(([0.],pval))
 
     # if isinstance(d, Dataset): # parsing was successful
@@ -135,7 +135,7 @@ def quantile_value(x_: Union[ndarray,DataSeries], u_: Union[ndarray,float]) -> n
     x_value_sorted_ = concatenate(([x_value_sorted[0]],x_value_sorted))
     u = asarray(u_,dtype=float) # if cannot cast to dtype=float return the numpy error
     one = u==1
-    index = asarray(n*u,dtype=int)+1
+    index = asarray(floor(n*u),dtype=int)+1
     if is_sized(u):
         if any(one): index[one] = index[one]-1
     else: 
