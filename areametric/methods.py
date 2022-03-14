@@ -26,7 +26,7 @@ def is_dataseries(x:Any) -> bool: return ds.is_dataseries(x)
 def dataseries(x:Any) -> DataSeries: return ds.dataseries(x)
 def is_mixture(x:Any) -> bool: return ds.is_mixture(x)
 def mixture(x:Any) -> Mixture: return ds.mixture(x)
-def compatible(x:DataSeries,y:DataSeries) -> bool: return x.dim == y.dim  # if this is True area metric can be computed.
+def is_compatible(x:DataSeries,y:DataSeries) -> bool: return x.dim == y.dim  # if this is True area metric can be computed.
 # Two DataSeries are area-metric compatible or comparable if they have the same dimension. 
 # Note that same dimension does not mean same sample size. 
 
@@ -199,7 +199,7 @@ def quantile_tensor_float(x:ndarray[float],i:ndarray[int],q:float,p:ndarray[floa
         start_x,end_x = int(j*rep), int((j+1)*rep)
         x_sorted_flat = xt.flatten()[start_x:end_x][it.flatten()[start_x:end_x]] # <- sort happens here (sort algorithm not deployed here)
         pq_sorted_flat[j] = inverse_quantile_algorithm(x_sorted_flat,q,p,side=side) # here deploy quantile algorithm
-    premut_rep_back = [permut[-1]]+permut[:-1] # permute back rep dimension to occupy the first
+    # premut_rep_back = [permut[-1]]+permut[:-1] # permute back rep dimension to occupy the first
     pq_sorted_reshape = pq_sorted_flat.reshape(shape_o) # from flat back to shape1
     return pq_sorted_reshape # if values are already sorted (increasing) this must return x
 
@@ -211,7 +211,6 @@ def inverse_quantile_value(x_:Union[ndarray,DataSeries], q:Union[ndarray,float],
     p = ecdf_p_(x) # vector to be indexed by k
     if is_sized(q): return quantile_tensor(x.value,x.index,q,p,side=side) # array of indices
     else: return quantile_tensor_float(x.value,x.index,q,p,side=side) # array of indices
-    
     
     # if is_sized(q): # must iterate over dataseries dimensions
     #     q = asarray(q,dtype=float)

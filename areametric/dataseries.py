@@ -41,6 +41,7 @@ def dataseries_value(x:Any) -> ndarray: # return ndarray if it qualifies to be a
 
 def dataseries(x:Any) -> DataSeries: # return a DataSeries if x qualifies
     if x.__class__.__name__ == 'DataSeries': return x
+    if x.__class__.__name__ == 'ndarray': return DataSeries(x)
     if is_dataseries(x): return DataSeries(asarray(x,dtype=float))
     if is_mixture(x): 
         warnings.warn('Input qualifies to be a mixture and it will be parsed as such.\n A mixture is a sequence of DataSeries with the same dimension.')
@@ -121,27 +122,29 @@ def show(x:DataSeries, n:int=10) -> str:
 # ('Rows are longer than columns: the value array will be transposed.\nIf there are more dimensions than repetitions, set the flag `shallow=True`.')
 # if len(x.shape)>2: raise ValueError(f'Unexpected shape of input ndarray: {x.shape} was provided, while (n,d) was expected.') # Tabular data can be at most a 2d-array
 class DataSeries(object):
-    """
-    -------------------------------
-    Created Feb 2022
-    github.com/marcodeangelis
-    University of Liverpool
-    MIT - License
-    -------------------------------
+    """ 
+    :+++++++++++++++++++++++++++++++
+     created: Feb 2022
+     web: github.com/marcodeangelis
+     org: University of Liverpool
+
+     MIT - License
+    :+++++++++++++++++++++++++++++++
 
     DataSeries is a wrapper of the Numpy ndarray class. 
 
     (*) The value of a DataSeries is a 1d-ndarray or a Nd-array
     (*) Arithmetic between DataSeries can be accessed through their value
     (*) A DataSeries is (1) sized, (2) iterable, and (3) indexable. 
-    (*) A DataSeries is not hashable
-    (*) Two compatible DS x and y can be concatenated with x+y
+    (*) A DataSeries is not hashable.
+    (*) Two compatible DS x and y can be concatenated with x+y.
 
-    When instantiated the DataSeries constructor computes and stores the indices of the sorted array (across the first dimension).
+    When instantiated, the DataSeries constructor computes and stores the indices of the sorted array (across the first dimension).
+    In other words, the DataSeries constructor deploy the sorting algorithm at inception.
 
-    The first dimension signifies the sample size or number of repetitions.
+    The first dimension signifies the sample size or number of repetitions the data have.
 
-    A DS which value is a 2d-array is a tabular DataSeries, which is someway in between a DS and a Mixture. 
+    A DS which value is a Nd-array is a tabular DataSeries, which is someway in between a DS and a Mixture. 
     Such tabular DS can be seen as a Mixture with columns of homogeneous size. 
 
     """
@@ -252,12 +255,13 @@ def mixture(x:Any) -> Mixture: # return the Mixture object # this funtion should
 
 class Mixture(object):
     """
-    -------------------------------
-    Created Feb 2022
-    github.com/marcodeangelis
-    University of Liverpool
-    MIT - License
-    -------------------------------
+    :+++++++++++++++++++++++++++++++
+     created: Feb 2022
+     web: github.com/marcodeangelis
+     org: University of Liverpool
+
+     MIT - License
+    :+++++++++++++++++++++++++++++++
 
     Mixture is a collection of DataSeries objects. It is an abstraction of DataSeries to include data with heterogeneous size. 
     Here size refers to the number of repetitions, i.e. the first integer in the shape of each DataSeries.
