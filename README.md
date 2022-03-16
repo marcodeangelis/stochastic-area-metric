@@ -359,93 +359,93 @@ We can also compute the area metric between samples whose dimension has cardinal
 
 ```python
 X = np.round(np.random.random_sample(size=(7,3,2))*10000)/100
-# [[[73.02 73.77]
-#   [ 5.9  51.31]
-#   [34.37 48.87]]
+X= [[[73.02, 73.77],
+     [ 5.9,  51.31],
+     [34.37, 48.87]],
 
-#  [[ 6.63 54.87]
-#   [83.52 50.12]
-#   [53.08 35.13]]
+     [[ 6.63, 54.87],
+      [83.52, 50.12],
+      [53.08, 35.13]],
 
-#  [[22.11  3.55]
-#   [53.16 70.89]
-#   [ 2.31 75.97]]
+     [[22.11,  3.55],
+      [53.16, 70.89],
+      [ 2.31, 75.97]],
 
-#  [[30.58 47.31]
-#   [81.03 50.84]
-#   [10.03 46.05]]
+     [[30.58, 47.31],
+      [81.03, 50.84],
+      [10.03, 46.05]],
 
-#  [[43.92 34.72]
-#   [71.6  95.53]
-#   [50.46 29.36]]
+     [[43.92, 34.72],
+      [71.6,  95.53],
+      [50.46, 29.36]],
 
-#  [[70.44 74.75]
-#   [49.18 14.76]
-#   [ 2.73 90.03]]
+     [[70.44, 74.75],
+      [49.18, 14.76],
+      [ 2.73, 90.03]],
 
-#  [[32.36 53.21]
-#   [94.28 77.12]
-#   [80.05 57.57]]]
+     [[32.36, 53.21],
+      [94.28, 77.12],
+      [80.05, 57.57]]]
 Y = np.round(np.random.random_sample(size=(13,3,2))*10000)/100
-# [[[23.74 31.6 ]
-#   [31.77 38.67]
-#   [84.94 92.09]]
+Y = [[[23.74, 31.6 ],
+      [31.77, 38.67],
+      [84.94, 92.09]],
 
-#  [[95.07 10.69]
-#   [ 4.6  79.76]
-#   [74.1  99.41]]
+     [[95.07, 10.69],
+      [ 4.6,  79.76],
+      [74.1,  99.41]],
 
-#  [[83.42 11.59]
-#   [ 4.33 62.08]
-#   [22.66  6.08]]
+     [[83.42, 11.59],
+      [ 4.33, 62.08],
+      [22.66,  6.08]],
 
-#  [[32.36 20.77]
-#   [ 4.84  4.92]
-#   [21.93 48.47]]
+     [[32.36, 20.77],
+      [ 4.84,  4.92],
+      [21.93, 48.47]],
 
-#  [[18.48 22.85]
-#   [22.14 41.66]
-#   [26.77 45.18]]
+     [[18.48, 22.85],
+      [22.14, 41.66],
+      [26.77, 45.18]],
 
-#  [[91.4  70.19]
-#   [93.46 81.74]
-#   [65.76 16.86]]
+     [[91.4,  70.19],
+      [93.46, 81.74],
+      [65.76, 16.86]],
 
-#  [[ 2.63 13.47]
-#   [24.86 53.08]
-#   [42.92 37.97]]
+     [[ 2.63, 13.47],
+      [24.86, 53.08],
+      [42.92, 37.97]],
 
-#  [[64.34 77.73]
-#   [91.83  6.93]
-#   [61.   85.52]]
+     [[64.34, 77.73],
+      [91.83,  6.93],
+      [61.,   85.52]],
 
-#  [[50.1  99.75]
-#   [ 4.48 21.14]
-#   [99.14 32.01]]
+     [[50.1,  99.75],
+      [ 4.48, 21.14],
+      [99.14, 32.01]],
 
-#  [[12.82 31.2 ]
-#   [40.9  64.32]
-#   [72.7  29.02]]
+     [[12.82, 31.2 ],
+      [40.9,  64.32],
+      [72.7,  29.02]],
 
-#  [[59.7  80.4 ]
-#   [67.14 69.97]
-#   [97.93 92.76]]
+     [[59.7,  80.4 ],
+      [67.14, 69.97],
+      [97.93, 92.76]],
 
-#  [[ 3.66 23.48]
-#   [40.34 80.26]
-#   [14.93 13.72]]
+     [[ 3.66, 23.48],
+      [40.34, 80.26],
+      [14.93, 13.72]],
 
-#  [[49.7  35.82]
-#   [35.81 22.44]
-#   [84.37 48.69]]]
+     [[49.7,  35.82],
+      [35.81, 22.44],
+      [84.37, 48.69]]]
 
 X_ds = am.dataseries(X)
 print(X_ds.info)
-# {'class': 'DataSeries', 'rep': 17, 'dim': (3, 2), 'tabular': True}
+# {'class': 'DataSeries', 'rep': 7, 'dim': (3, 2), 'tabular': True}
 
 Y_ds = am.dataseries(Y)
 print(Y_ds.info)
-# {'class': 'DataSeries', 'rep': 23, 'dim': (3, 2), 'tabular': True}
+# {'class': 'DataSeries', 'rep': 13, 'dim': (3, 2), 'tabular': True}
 ```
 
 The area metric between these two tabular dataseries will be a matrix of area-metric values of dimension 3x2:
@@ -481,7 +481,55 @@ Z = np.round(np.random.random_sample(size=(11,3,2))*10000)/100
 Z_ds = am.dataseries(Z)
 print(Z_ds.info)
 # {'class': 'DataSeries', 'rep': 11, 'dim': (3, 2), 'tabular': True}
+
+print(Z)
+
+Z = [[[14.38, 17.08],
+      [15.73, 22.87],
+      [67.04, 95.6 ]],
+
+     [[46.8 , 24.32],
+      [84.98, 34.08],
+      [95.26, 99.87]],
+
+     [[99.8,  25.26],
+      [45.59, 46.32],
+      [19.28,  7.  ]],
+
+     [[91.7,  51.62],
+      [47.2,  31.38],
+      [56.28, 95.3 ]],
+
+     [[64.4,  66.47],
+      [51.89, 51.38],
+      [44.3 , 61.  ]],
+
+     [[76.95,  0.2 ],
+      [58.39, 64.42],
+      [30.84, 96.29]],
+
+     [[12.51, 43.74],
+      [52.34,  7.71],
+      [37.04, 71.07]],
+
+     [[39.4,  26.06],
+      [19.03, 70.33],
+      [71.79, 15.9 ]],
+
+     [[16.92, 18.4 ],
+      [14.46, 85.53],
+      [71.17, 20.54]],
+
+     [[51.32, 30.  ],
+      [17.71, 24.29],
+      [59.89, 83.54]],
+
+     [[62.87, 33.72],
+      [84.1,  23.63],
+      [46.23,  4.78]]]
+
 ```
+
 
 and then create a mixture collecting `X`, `Y` and `Z` in a single instance as follows.
 
@@ -493,7 +541,25 @@ print(XYZ_m.info)
 
 The resulting mixture will have length 3, as the number of data sets contained in it, and have dimension 3x2. The attribute `hom` that stands for *homogeneous*, will display `True` when the mixture has samples with the same number of repetitions, which is not the case here. An homogeneous data mixture can be dealt with more efficiently, as it can be stored into an `ndarray` and handles as such. 
 
-Calling the area metric function on a mixture will compute the area between the envelope of CDFs that the mixture induces. 
+Calling the area metric function on a mixture will compute the area between the envelope of CDFs that the mixture induces. So for example, the area metric of the envelope `XYZ_m` is computed as follows:
+
+```python
+print(am.areame_mixture(XYZ_m))
+
+# [[16.57455544 24.13756244]
+#  [30.0221978  19.68728272]
+#  [29.32307692 23.68461538]]
+```
+
+We can plot the area metric corrisponding to the location `[0,0]` as follows:
+
+
+```python
+XYZ_m_00 = am.mixture_given_dimension_index(XYZ_m,(0,0))
+_=am.plot_mixture_area(XYZ_m_00,grid=False)
+```
+
+![png](docs/figures/area5.png)
 
 
 
