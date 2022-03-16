@@ -116,7 +116,8 @@ def plot_box(a:ndarray,b:ndarray,ax:pyplot=None,figsize=FIGSIZE,grid:bool=False,
 
 def plot_area(x_:ndarray,y_:ndarray,ax=None,alpha:float=0.15,color:str='gray', figsize:tuple=FIGSIZE, marker:str='.', 
                                    lw:float=1,fontsize:str=FONTSIZE,xlabel:str='x, y',ylabel:str='Probability',
-                                   grid:bool=False,title:str=None,legend:bool=False,savefig:str=None,areame:bool=True) -> pyplot:
+                                   grid:bool=False,title:str=None,legend:bool=False,savefig:str=None,areame:bool=True,
+                                   xtext:float=None,ytext:float=0.5,dots_size:float=10,plot_box_edges:bool=True) -> pyplot:
     x, y = dataseries(x_), dataseries(y_) # add do-not-sort flag 
     nx, ny = len(x), len(y)
     xval,yval = x.value, y.value
@@ -150,13 +151,16 @@ def plot_area(x_:ndarray,y_:ndarray,ax=None,alpha:float=0.15,color:str='gray', f
         v_[ixy==1] = ecdf_p_y
         vs[ixy==0] = -v[ixy==0] # double signed steps height
         b = asarray([v_[:-1], v_[:-1] + vs[:-1]]).T
-        for ai,bi in zip(a,b): plot_box(ai,bi,ax=ax,facecolor=color,edgecolor='black')
-    plot_ecdf(x,ax=ax)
-    plot_ecdf(y,ax=ax)
+        edgecolor = None if plot_box_edges==False else 'gray'
+        for ai,bi in zip(a,b): plot_box(ai,bi,ax=ax,facecolor=color,edgecolor=edgecolor)
+    plot_ecdf(x,ax=ax,dots_size=dots_size)
+    plot_ecdf(y,ax=ax,dots_size=dots_size)
     if areame: 
         am=areaMe(x,y)
-        if nx==ny:ax.text(x.value_sorted[0],0.5,f"area = {'%g'%am}")
-        else: ax.text(xysv[0],0.5,f"area = {'%g'%am}")
+        if xtext is not None: ax.text(xtext,ytext,f"area = {'%g'%am}")
+        else:
+            if nx==ny:ax.text(x.value_sorted[0],ytext,f"area = {'%g'%am}")
+            else: ax.text(xysv[0],ytext,f"area = {'%g'%am}")
     if legend: ax.legend()
     if savefig is not None: fig.savefig(savefig)
     return fig,ax
@@ -176,7 +180,7 @@ def plot_area(x_:ndarray,y_:ndarray,ax=None,alpha:float=0.15,color:str='gray', f
 def plot_mixture_area(x_:list,ax=None,alpha:float=0.15, color:str='gray', figsize:tuple=FIGSIZE, marker:str='.', 
                               lw:float=1,fontsize:str=FONTSIZE,xlabel:str='mixture(X)',ylabel:str='Probability',
                               grid:bool=False,title:str=None,legend:bool=False,savefig:str=None,areame:bool=True,
-                              ytext:float=0.5, plot_bounding_cdf:bool=False,plot_box_edges:bool=True) -> pyplot:
+                              xtext=None,ytext:float=0.5, plot_bounding_cdf:bool=False,plot_box_edges:bool=True) -> pyplot:
     x = mixture(x_)
     fig=None
     if ax is None: 
@@ -212,8 +216,10 @@ def plot_mixture_area(x_:list,ax=None,alpha:float=0.15, color:str='gray', figsiz
         for ds in x: plot_ecdf(ds,ax=ax,plot_data_dots=False,lw=0.5)
     if areame: 
         am=areame_mixture(x)
-        if x.homogeneous: ax.text(x_l[0],ytext,f"area = {'%g'%am}")
-        else: ax.text(one_sorted_values[0],ytext,f"area = {'%g'%am}")
+        if xtext is not None: ax.text(xtext,ytext,f"area = {'%g'%am}")
+        else:
+            if x.homogeneous: ax.text(x_l[0],ytext,f"area = {'%g'%am}")
+            else: ax.text(one_sorted_values[0],ytext,f"area = {'%g'%am}")
     return fig,ax
 
 
