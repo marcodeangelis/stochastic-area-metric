@@ -20,13 +20,14 @@
 '''
 from __future__ import annotations
 from typing import Union
+from matplotlib.pyplot import axis
 
 import numpy
 
 from numpy import (ndarray, concatenate, linspace, diff, argmax, argmin, arange, transpose, prod, empty)
 
-from .dataseries import (dataseries, mixture)
-from .methods import (ecdf, ecdf_p, inverse_quantile_function, quantile_function, is_compatible)
+from .dataseries import (dataseries, mixture, mixture_given_dimension_index, map_index_flat_to_array)
+from .methods import (ecdf, ecdf_p, inverse_quantile_function, inverse_quantile_mixture, quantile_function, is_compatible)
 
 
 def areame_algorithm(x_: ndarray, y_: ndarray) -> float: # inputs lists of doubles # numpy array are not currently supported.
@@ -66,12 +67,12 @@ def areame_algorithm(x_: ndarray, y_: ndarray) -> float: # inputs lists of doubl
     n = n1 if n1>n2 else n2
     qx, qy = quantile_function(x), quantile_function(y)
     iqx, iqy = inverse_quantile_function(x,side='right'), inverse_quantile_function(y,side='right')
-    if ((n2>n1) & (n2%n1!=0)) | ((n1<n2) & (n1%n2!=0)): # slow branch
+    if ((n1<n2) & (n2%n1!=0)) | ((n2<n1) & (n1%n2!=0)): # slow branch terminates in context
         xy = x + y # concatenate the two dataseries # sort happens here again
         xysv = xy.value_sorted # get data after sorting
-        u = abs(iqx(xysv) - iqy(xysv)) # steps height
-        v = diff(xysv) # steps width
-        return sum(u[:-1]*v) # sum all area chunks and terminate
+        v = abs(iqx(xysv) - iqy(xysv)) # steps height
+        u = diff(xysv) # steps width
+        return sum(u*v[:-1]) # sum all area chunks and terminate
     elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
     elif (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
     p_= concatenate(([0.],p)) 
@@ -128,66 +129,120 @@ def area_chunks(x_:ndarray,y_:ndarray) -> ndarray: # not yet tensor
     v = diff(xysv) # steps width
     return u[:-1]*v # area chunks
 
+def areame_mixture_inneralgorithm(x,one_sorted_values): 
+    '''
+    Computes the area metric between 1d mixtures.
+    '''
+    iqx_r = inverse_quantile_mixture(x,one_sorted_values,side='right') # inverse quantile value for each sample in the mixture.
+    uu = diff(one_sorted_values,) # steps width
+    vv = abs(numpy.max(iqx_r,axis=0) - numpy.min(iqx_r,axis=0)) # steps height
+    return numpy.sum((uu*vv[:-1]),axis=0) # sum all area chunks and terminate # transpose to allow broadcasting of multiplication
 
+def permute_first_and_last(x:ndarray):
+    shape_x = x.shape
+    permute = list(arange(len(shape_x))) # order of dimension
+    permute_first_last = permute[1:]+[permute[0]] # new order of dimensions with dimension 0 moved to last
+    return transpose(x,permute_first_last) # array transposed with first dimension as last
 
-
-
-
-
-
-def areaMe_env(dataset: list) -> float:  # inputs a list of datasets of different sizes (list of lists)
+def areame_mixture(x_:list[ndarray]) -> float:
     '''
     : --------------------------- ∞
-    cre: Oct 2020
-    edi: Mar 2020
-    aut: Marco De Angelis
+    cre: Mar 2022
+
     web: github.com/marcodeangelis
     org: University of Liverpool
     
-    GNU General Public License v3.0
+    MIT
     : --------------------------- ∞
 
-    Code for the area metric of an envelope of datasets. Currenly under testing.
+    Code for the area metric of an envelope of datasets. Currenly under speed testing. Looking for more efficient implementations.
     
     ''' 
-    def envelope(D: list): # inputs a list of datasets (list of lists)
-        F = [Dataset(d,bareclass=True).interp_f() for d in D]
-        dd =[]
-        ii =[]
-        for i,d in enumerate(D): 
-            dd+=d           # blend all data into a big dataset
-            ii+=len(d)*[i]  # assign a unique index to each element
-        dd.sort() # sort in place
-        I_min = []
-        I_max = []
-        d_prev = dd[0]
-        for d,i in zip(dd,ii):
-            Y_h = [f(d) for f in F]
-            v = (d_prev+d)/2
-            Y_l = [f(v) for f in F] # ensures interpolator on step picks the bottom value
-            ama = argmax(Y_h)
-            ami = argmin(Y_l)
-            I_max.append(ama)
-            I_min.append(ami)
-            d_prev = d
-        return I_min, I_max, F, dd
-    D = dataset.copy() # avoid catastrophic memory leaks due to the sort in place
-    minf,maxf,ff,dd = envelope(D) # -- main function starts here -- #
-    diff=[d1-d2 for d1,d2 in zip(dd[1:],dd[:-1])] # N-1 vector of differences
-    diff.sort()
-    for x in diff:
-        if x>0:
-            s=x/10 # this assigns to s the smallest difference greater than zero and makes it smaller
-            break
-    AM = 0
-    for i,_ in enumerate(dd):
-        if i<len(dd)-1:
-            d0 = dd[i] # = d
-            d1 = dd[i+1]
-            dx = d1-d0
-            dy = ff[maxf[i]](d0) - ff[minf[i+1]](d1-s)
-            AM += dx*dy
-    return AM      
+    x = mixture(x_)
+    one_dataseries = dataseries(x.values[1]) # sort takes place in here. # collects all values into one dataseries.
+    one_sorted_values = one_dataseries.value_sorted
+    if x.dim==(1,): return areame_mixture_inneralgorithm(x,one_sorted_values) # if mixture has dimension (1,) terminates here.
+    one_sorted_values_permute_first_and_last = permute_first_and_last(one_sorted_values)
+    x_dim=x.dim
+    areame_array = empty(x_dim)
+    for j in range(prod(x_dim)): # there should be more effcient ways to do this # it computes the area metric for each 1d mixture in the mixture array.
+        i = map_index_flat_to_array(x_dim)[j]
+        areame_array[i] = areame_mixture_inneralgorithm(mixture_given_dimension_index(x,i),one_sorted_values_permute_first_and_last[i])
+    return areame_array
+        
+
+    # ii=[]
+    # len_q = sum(x.repetitions)
+    # shape_iq = tuple([len(x)]+[len_q]+list(x.dim))
+    # iqxx_l,iqxx_r = empty(shape_iq),empty(shape_iq)
+    # for i,xi in enumerate(x):
+    #     if i==0: xx=xi  # todo: empty mixture 
+    #     else: xx+=xi    # merge all data in one vector dataseries
+    #     ii+=len(xi)*[i] # create corresponding vector of provenance indexes
+    #     iqxx_l.append(inverse_quantile_function(xi,'left'))
+    #     iqxx_r.append(inverse_quantile_function(xi,'right'))
+    # xxsv = xx.value_sorted # get data after sorting
+    # uu = abs(iqx(xxsv) - iqy(xxsv)) # steps height
+    # vv = diff(xysv) # steps width
+    # return sum(u[:-1]*v) # sum all area chunks and terminate
+
+# def areame_mixture_tensor(x:ndarray,y:ndarray):
+#     pass
+
+
+# def areaMe_env(dataset: list) -> float:  # inputs a list of datasets of different sizes (list of lists)
+#     '''
+#     : --------------------------- ∞
+#     cre: Oct 2020
+#     edi: Mar 2022
+
+#     web: github.com/marcodeangelis
+#     org: University of Liverpool
+    
+#     MIT
+#     : --------------------------- ∞
+
+#     Code for the area metric of an envelope of datasets. Currenly under testing.
+    
+#     ''' 
+#     def envelope(D: list): # inputs a list of datasets (list of lists)
+#         F = [Dataset(d,bareclass=True).interp_f() for d in D]
+#         dd =[]
+#         ii =[]
+#         for i,d in enumerate(D): 
+#             dd+=d           # blend all data into a big dataset
+#             ii+=len(d)*[i]  # assign a unique index to each element
+#         dd.sort() # sort in place
+#         I_min = []
+#         I_max = []
+#         d_prev = dd[0]
+#         for d,i in zip(dd,ii):
+#             Y_h = [f(d) for f in F]
+#             v = (d_prev+d)/2
+#             Y_l = [f(v) for f in F] # ensures interpolator on step picks the bottom value
+#             ama = argmax(Y_h)
+#             ami = argmin(Y_l)
+#             I_max.append(ama)
+#             I_min.append(ami)
+#             d_prev = d
+#         return I_min, I_max, F, dd
+#     D = dataset.copy() # avoid catastrophic memory leaks due to the sort in place
+#     minf,maxf,ff,dd = envelope(D) # -- main function starts here -- #
+#     diff=[d1-d2 for d1,d2 in zip(dd[1:],dd[:-1])] # N-1 vector of differences
+#     diff.sort()
+#     for x in diff:
+#         if x>0:
+#             s=x/10 # this assigns to s the smallest difference greater than zero and makes it smaller
+#             break
+#     AM = 0
+#     for i,_ in enumerate(dd):
+#         if i<len(dd)-1:
+#             d0 = dd[i] # = d
+#             d1 = dd[i+1]
+#             dx = d1-d0
+#             dy = ff[maxf[i]](d0) - ff[minf[i+1]](d1-s)
+#             AM += dx*dy
+#     return AM      
 
 
 

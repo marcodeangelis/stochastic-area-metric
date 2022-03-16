@@ -44,7 +44,7 @@ def dataseries(x:Any) -> DataSeries: # return a DataSeries if x qualifies
     if x.__class__.__name__ == 'ndarray': return DataSeries(x)
     if is_dataseries(x): return DataSeries(asarray(x,dtype=float))
     if is_mixture(x): 
-        warnings.warn('Input qualifies to be a mixture and it will be parsed as such.\n A mixture is a sequence of DataSeries with the same dimension.')
+        warnings.warn('Input qualifies to be a mixture and it will be parsed as such.\n A mixture is a sequence of DataSeries with the same dimension, but different number of repetitions.')
         return mixture(x) 
     else: raise ValueError('The input cannot be parsed into a DataSeries nor into a mixture of DataSeries. Most likely because the inputted DataSeries have different dimension.')
 
@@ -80,7 +80,7 @@ def samples_with_flattened_dimension(x_:DataSeries) -> ndarray:
     xx = asarray([x.value[i].flatten(order='C') for i in range(len(x))], dtype=float).T
     return asarray([xi for xi in xx],dtype=float)
 
-def map_c_order(i:tuple[int],dim:tuple[int]): return arange(prod(dim),dtype=int).reshape(dim)[i] # return array of indices corresponding to the flattened array 
+def map_c_order(i:tuple[int],dim:tuple[int]) -> ndarray: return arange(prod(dim),dtype=int).reshape(dim)[i] # return array of indices corresponding to the flattened array 
     
 def samples_given_dimension(x_:DataSeries,i:tuple[int]):
     if x_.__class__.__name__ == 'DataSeries': x=x_
@@ -101,9 +101,10 @@ def value_sorted(x:ndarray[float],i:ndarray[int]): # return the ndarray `x` with
     xt = transpose(x,permut_rep_last) # array transposed with rep dimension as last
     it = transpose(i,permut_rep_last) # argsort indexes transposed with rep dimension as last
     x_sorted_flat = empty((prod(shape0,dtype=int),))
+    xt_flatten,it_flatten = xt.flatten(),it.flatten()
     for j in range(prod(shape0[1:],dtype=int)): # loop over all elements except the rep dimension
         start,end = int(j*rep), int((j+1)*rep)
-        x_sorted_flat[start:end]=xt.flatten()[start:end][it.flatten()[start:end]] # <- sort happens here (sort algorithm not deployed here)
+        x_sorted_flat[start:end]=xt_flatten[start:end][it_flatten[start:end]] # <- sort happens here (sort algorithm not deployed here)
     premut_rep_back = [permut[-1]]+permut[:-1] # permute back rep dimension to occupy the first
     x_sorted_reshape = x_sorted_flat.reshape(shape1) # from flat back to shape1
     x_sorted_reshape_transpose = transpose(x_sorted_reshape,premut_rep_back) # from shape1 back to shape0
@@ -150,7 +151,7 @@ class DataSeries(object):
     """
     def __repr__(self): return show(self)# return
     def __str__(self): return show(self) # print
-    def __init__(self,x_: ndarray, dtype=float, shallow:bool=True) -> None: # constructor must return None
+    def __init__(self,x_: ndarray, dtype=float, shallow:bool=False, labels:Union[int,str]=None) -> None: # constructor must return None
         self.__value = dataseries_value(x_) # turn x into ndarray if it qualifies to be a DataSeries
         self.__tabular = True
         if len(self.__value.shape)==1: self.__tabular = False
@@ -165,6 +166,7 @@ class DataSeries(object):
         if len(self.__shape)==1: self.__dim = (1,)
         else: self.__dim = tuple([self.__shape[j] for j in range(1,len(self.__shape))])
         self.__length = self.__shape[0]
+        self.__labels = labels
     def __len__(self) -> int: return self.__shape[0]
     def __iter__(self): # makes class iterable
         for v in self.__value: yield v 
@@ -202,6 +204,8 @@ class DataSeries(object):
     def samples_sorted(self): return asarray([s[i] for s,i in zip(self.samples,self.samples_index())],dtype=float)
     @property
     def value_sorted(self): return value_sorted(self.value,self.index)
+    @property
+    def labels(self): return self.__labels
     def iterate_samples_flat(self): pass
     def iterate_samples_flat_sorted(self): pass
     # -------------- MAGIC METHODS ----------------- #
@@ -238,9 +242,9 @@ def is_mixture(x:Any) -> bool:
 def mixture_value(x:Any) -> Sequence[ndarray]: # return the mixture value
     if x.__class__.__name__ == 'Mixture': return x.value
     if x.__class__.__name__ == 'DataSeries': return [x.value]
-    if is_iterable(x)==False: raise ValueError('Input does not qualify to be a dataseries mixture.')
+    if is_iterable(x)==False: raise ValueError('Input does not qualify to be a mixture, because the input is not iterable.')
     if is_mixture(x): mix = [dataseries(xi) for xi in x]
-    else: raise ValueError('Input does not qualify to be a dataseries mixture.')
+    else: raise ValueError('Input does not qualify to be a mixture. This is likely due to dimension incompatibility.')
     if all([compatible(xi,xj) for xi in mix for xj in mix]): return mix
     else: raise ValueError('Input does not qualify to be a mixture because dataseries have heterogeneous dimensions.')
 
@@ -252,6 +256,21 @@ def mixture(x:Any) -> Mixture: # return the Mixture object # this funtion should
     else: raise ValueError('Input does not qualify to be a dataseries mixture.')
     if all([compatible(xi,xj) for xi in m for xj in m]): return Mixture(m)
     else: raise ValueError('Input does not qualify to be a mixture because dataseries have heterogeneous dimensions.')
+
+def mixture_to_one_dataseries_value(x_:Mixture) -> DataSeries:  
+    x = mixture(x_)  
+    ii = []
+    x_lengths = x.repetitions
+    for i,xi in enumerate(x):  
+        if i==0: xv=xi.value  # todo: empty mixture  
+        else: xv=concatenate((xv,xi.value))    # merge all data in one vector dataseries  
+        ii+=x_lengths[i]*[i] # create corresponding vector of index provenance 
+    return asarray(ii,dtype=int),xv
+
+def mixture_given_dimension_index(x_:Mixture,i:Union[tuple[int],slice]): 
+    x = mixture(x_)
+    return mixture([dataseries(ds[i]) for ds in x])
+
 
 class Mixture(object):
     """
@@ -281,21 +300,22 @@ class Mixture(object):
     If the mixture has all samples with the same number of repetitions, it is called a homogeneous mixture.
 
     """
-    def __repr__(self) -> str: return f'{self.value}'
-    def __str__(self) -> str: return f'{self.value}'
+    def __repr__(self) -> str: return f'{self.dataseries}'
+    def __str__(self) -> str: return f'{self.dataseries}'
     def __init__(self,x_:Sequence[DataSeries,ndarray]):
-        self.__value = mixture_value(x_)
-        self.__shapes = [xi.shape for xi in self.__value]
-        self.__lengths = [len(xi) for xi in self.__value]
+        self.__dataseries = mixture_value(x_) # list of dataseries
+        self.__shapes = [xi.shape for xi in self.__dataseries]
+        self.__lengths = [len(xi) for xi in self.__dataseries]
         self.__dim = dimension(self.__shapes)
         self.__homogeneous = False
-        if all([len(xi)==len(xj) for xi in self.__value for xj in self.__value]): self.__homogeneous = True
-    def __len__(self): return len(self.value)
+        if all([len(xi)==len(xj) for xi in self.__dataseries for xj in self.__dataseries]): self.__homogeneous = True
+        # self.__values, self.__indexes = mixture_to_one_dataseries_value(self) # chain all dataseries into one <- this is needed for computing the area metric of its envelope
+    def __len__(self): return len(self.__dataseries)
     def __iter__(self): # makes class iterable
-        for v in self.__value: yield v 
+        for v in self.__dataseries: yield v 
     def __next__(self): pass 
-    def __getitem__(self, i:Union[int,slice]): return dataseries(self.__value[i])
-    def __setitem__(self, i: Union[int, slice], x: Union[ndarray,float]) -> None: self.__value[i] = x
+    def __getitem__(self, i:Union[int,slice]): return dataseries(self.__dataseries[i])
+    def __setitem__(self, i: Union[int, slice], x: Union[ndarray,float]) -> None: self.__dataseries[i] = x
     @property
     def shapes(self): return self.__shapes
     @property
@@ -307,7 +327,7 @@ class Mixture(object):
     @property
     def homogeneous(self): return self.__homogeneous
     @property
-    def value(self): return self.__value
+    def dataseries(self): return self.__dataseries
     @property
     def classname(self): return self.__class__.__name__
     @property
@@ -315,14 +335,17 @@ class Mixture(object):
         d={ 'class':self.classname,
             'rep':self.lengths,
             'dim':self.dim,
-            'len':len(self.value),
+            'len':len(self.dataseries),
             'hom':self.homogeneous}
         return d
+    @property
+    def values(self): return self.mixture_to_one_dataseries_value()
+    def mixture_to_one_dataseries_value(self): return mixture_to_one_dataseries_value(self)
     # -------------- MAGIC METHODS ----------------- #
     def __add__(self,other) -> Mixture: # for concatenation
         otherType = other.__class__.__name__
-        if otherType == 'Mixture': return Mixture(self.value + other.value)
-        elif otherType == 'DataSeries': return Mixture(self.value + [other.value])
+        if otherType == 'Mixture': return Mixture(self.dataseries + other.dataseries)
+        elif otherType == 'DataSeries': return Mixture(self.dataseries + [other.dataseries])
         else: x = mixture(other) # will raise error if it does not qualify
         return self.__add__(self,x)
     def __radd__(left,self):
