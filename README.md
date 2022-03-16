@@ -71,7 +71,6 @@ https://doi.org/10.48550/arXiv.2111.03570
 ---
 
 ## Cite
-=======
 
 > De Angelis M., Sunny J. (2021). *The stochastic area metric*. Github repository. 
 > 
@@ -114,7 +113,7 @@ Then, open a code editor in the cloned or unzipped downloaded folder.
 
 ## Integration 
 
-To use this code in your Python project, just copy the folder `areametric` in your workspace. In fact, all the (Python) code is contained in this folder--look no further! Once the `areametric` is in your workspace, it will be seen as a Python package, so you can simply import the code using: 
+To use this code in your Python project, just copy the folder `areametric` in your workspace. In fact, all the (Python) code is contained in this folder; look no further! Once the `areametric` is in your workspace, it will be seen as a Python package, so you can simply import the code using: 
 
 ```python
 import areametric as am
@@ -135,8 +134,6 @@ We recommend installing also `matplotlib` for plotting.
 ### Virtual environment
 
 Set up your Python3 virtual environment to safely install the dependencies.
-
-On MacOS/Linux:
 
 ```bash
 $ python3 -m venv myenv 
@@ -173,9 +170,8 @@ import areametric as am
 ```python
 from areametric.areametric import (areaMe)
 from areametric.dataseries import (dataseries,mixture) 
-from areametric.methods import (ecdf, quantile_function, quantile_value, inverse_quantile_function, inverse_quantile_value)
-from areametric.plotting import (plot_area, plot_ecdf, plot_ecdf_boxed)
-from areametric.examples import (skinny, puffy)
+from areametric.methods import (ecdf, quantile_function, inverse_quantile_function)
+from areametric.plotting import (plot_area, plot_ecdf)
 ```
 
 In what follows we'll be using the importer as in (1).
@@ -192,14 +188,14 @@ y = [3.5 , 6.9 , 6.1 , 2.8 , 3.5 , 6.5 , 0.15, 4.5 , 7.1 ]
 The area metric between `x` and `y` is:
 
 ```python
-print(am.areaMe(x,y,areame=True,grid=True))
+print(am.areaMe(x,y))
 # 1.266111111111111
 ```
 
 We can plot the results using:
 
 ```python
-am.plot_area(x,y)
+am.plot_area(x,y,areame=True,grid=True)
 ```
 ![png](docs/figures/area1.png)
 
@@ -258,11 +254,6 @@ am.plot_area(x,y)
 ```
 
 ![png](docs/figures/area4.png)
-
-
-
-
-
 
 
 
@@ -582,7 +573,7 @@ import scipy.stats as stats
 lognormal = stats.lognorm
 ```
 
-Because the lognormal is defined in terms of the mean `mu` and variance `s2` of the random variable `Y` whose exponential is our target distribution `X`, such that `X=exp(Y)`, we are going to need to map these two parameters from the mean and variance of our target lognormal variable. 
+Because the lognormal is defined in terms of the mean `mu` and variance `s**2` of the random variable `Y` whose exponential is our target distribution `X`, such that `X=exp(Y)`, we are going to need to map these two parameters from the mean and variance of our target lognormal variable. 
 
 ```python
 import numpy as np
