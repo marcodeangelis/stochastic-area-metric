@@ -10,14 +10,14 @@ from __future__ import annotations
 from tkinter import font
 from typing import Sequence, Sized, Union, Iterable, Optional, Any, Callable, Tuple
 
-import numpy
-from numpy import (asarray, empty, ndarray, sort, concatenate, diff, zeros, ones)
+import numpy as np
+from numpy import (asarray, empty, ndarray, sort, concatenate, diff, zeros, ones, argmin, argmax)
 
 from matplotlib import pyplot
 
-from .dataseries import dataseries
-from .areametric import areaMe
-from .methods import (ecdf,ecdf_, ecdf_p, quantile_function, inverse_quantile_function, inverse_quantile_value)
+from .dataseries import (dataseries,mixture)
+from .areametric import areaMe, areame_mixture
+from .methods import (ecdf, ecdf_, ecdf_p, ecdf_p_, quantile_function, inverse_quantile_function, inverse_quantile_value, inverse_quantile_mixture)
 
 FONTSIZE = 16
 FIGSIZE = (12,8)
@@ -52,19 +52,23 @@ def stairs(x:ndarray, above:bool=True):
     x,y = stepdata(x,p)
     return x, y
 
-def plot_ecdf(x_:ndarray,ax=None,figsize=FIGSIZE,fontsize:int=FONTSIZE,grid=False,color=None):
+def plot_ecdf(x_:ndarray,ax:pyplot=None,figsize:tuple=FIGSIZE,fontsize:int=FONTSIZE,grid:bool=False,
+                            xlabel:str='x', ylabel:str='y',
+                            lw:int=1,color:str=None,dots_marker:str=None,dots_color:str='red',dots_size:float=10,
+                            zorder:float=None, plot_data_ticks:bool=True, plot_data_dots:bool=True) -> pyplot:
     x = dataseries(x_).value
     fig=[]
-    if ax is None:fig,ax = pyplot.subplots(figsize=figsize)
-    if grid: ax.grid()
+    if ax is None:
+        fig,ax = pyplot.subplots(figsize=figsize)
+        if grid: ax.grid()
+        ax.set_xlabel(xlabel,fontsize=fontsize)
+        ax.set_ylabel(ylabel,fontsize=fontsize)
+        ax.tick_params(direction='out', grid_alpha=0.5, labelsize='large')
     x1,y1 = stairs(x)
-    ax.plot(x1,y1,color=color)
-    ax.scatter(x,[0]*len(x),marker='|',s=200) # https://matplotlib.org/stable/api/markers_api.html
+    ax.plot(x1,y1,color=color,zorder=zorder,lw=lw)
+    if plot_data_ticks: ax.scatter(x,[0]*len(x),marker='|',s=200) # https://matplotlib.org/stable/api/markers_api.html
     x2,p=ecdf(x)
-    ax.scatter(x2,p,s=10,color='red',zorder=3)
-    ax.set_xlabel('x',fontsize=fontsize)
-    ax.set_ylabel('p',fontsize=fontsize)
-    ax.tick_params(direction='out', grid_alpha=0.5, labelsize='large')
+    if plot_data_dots: ax.scatter(x2,p,s=dots_size,color=dots_color,marker=dots_marker,zorder=zorder)
     return fig, ax 
 
 def plot_ecdf_boxed(x_:ndarray,ax=None,figsize=FIGSIZE,fontsize:int=FONTSIZE,grid=False,midline:bool=False):
@@ -167,6 +171,53 @@ def plot_area(x_:ndarray,y_:ndarray,ax=None,alpha:float=0.15,color:str='gray', f
         #         v_[j] = ecdf_p_y[i] 
         #         vs[j] = +v[j] # double signed version of the p differences
         #         i+=1
+
+
+def plot_mixture_area(x_:list,ax=None,alpha:float=0.15, color:str='gray', figsize:tuple=FIGSIZE, marker:str='.', 
+                              lw:float=1,fontsize:str=FONTSIZE,xlabel:str='mixture(X)',ylabel:str='Probability',
+                              grid:bool=False,title:str=None,legend:bool=False,savefig:str=None,areame:bool=True,
+                              ytext:float=0.5, plot_bounding_cdf:bool=False,plot_box_edges:bool=True) -> pyplot:
+    x = mixture(x_)
+    fig=None
+    if ax is None: 
+        fig,ax = pyplot.subplots(figsize=figsize)
+        if grid: ax.grid()
+        ax.set_xlabel(xlabel,fontsize=fontsize)
+        ax.set_ylabel(ylabel,fontsize=fontsize)
+        if title is not None: ax.set_title(title,fontsize=fontsize)
+    if x.homogeneous:
+        p = ecdf_p_(x)
+        x_array_sorted = asarray([ds.value_sorted for ds in x], dtype=float) # array containing all values
+        x_l = np.min(x_array_sorted,axis=0)
+        x_r = np.max(x_array_sorted,axis=0)
+        u1,v1 = stairs(x_l)
+        u2,_  = stairs(x_r)
+        if plot_bounding_cdf:
+            plot_ecdf(x_l,ax=ax,zorder=10,plot_data_ticks=False)
+            plot_ecdf(x_r,ax,ax,zorder=10,plot_data_ticks=False)
+        ax.fill_betweenx(y=v1,x1=u1,x2=u2,facecolor=color,alpha=alpha)
+        for ds in x: plot_ecdf(ds,ax=ax,lw=0.45,color='gray',plot_data_dots=False)
+    else:
+        one_dataseries = dataseries(x.values[1]) # sort takes place in here. # collects all values into one dataseries.
+        one_sorted_values = one_dataseries.value_sorted
+        iqx_r = inverse_quantile_mixture(x,one_sorted_values,side='right') # inverse quantile value for each sample in the mixture.
+        uu = diff(one_sorted_values,) # steps width
+        u_= concatenate(([one_sorted_values[0]], one_sorted_values[:-1] + uu))
+        vv = abs(np.max(iqx_r,axis=0) - np.min(iqx_r,axis=0)) # steps height
+        v_ = np.min(iqx_r,axis=0)
+        a = asarray([u_[:-1], u_[1:]]).T
+        b = asarray([v_[:-1], v_[:-1] + vv[:-1]]).T
+        edgecolor = None if plot_box_edges==False else 'gray'
+        for ai,bi in zip(a,b): plot_box(ai,bi,ax=ax,facecolor=color,edgecolor=edgecolor)
+        for ds in x: plot_ecdf(ds,ax=ax,plot_data_dots=False,lw=0.5)
+    if areame: 
+        am=areame_mixture(x)
+        if x.homogeneous: ax.text(x_l[0],ytext,f"area = {'%g'%am}")
+        else: ax.text(one_sorted_values[0],ytext,f"area = {'%g'%am}")
+    return fig,ax
+
+
+
 
 
 
