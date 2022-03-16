@@ -565,88 +565,104 @@ _=am.plot_mixture_area(XYZ_m_00,grid=False)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Parametric (simulated) data
 
-Parametric data is data obtained sampling at random from probability distributions such as the Lognormal distribution.
+Parametric data is data obtained sampling at random from a parametric probability distribution such as the lognormal distribution.
 
-Let's define a Lognormal distribution using the moments.
+
+
+For example, let us define a lognormal distribution in terms of first and second moment. We will use the library `scipy.stats` to perform this task. 
+
+```python
+import scipy.stats as stats
+
+lognormal = stats.lognorm
+```
+
+Because the lognormal is defined in terms of the mean `mu` and variance `s2` of the random variable `Y` whose exponential is our target distribution `X`, such that `X=exp(Y)`, we are going to need to map these two parameters from the mean and variance of our target lognormal variable. 
+
+```python
+import numpy as np
+
+m = 5 # mean of the lognormal distribution X
+s = 1 # standard deviation of the lognormal X
+
+r2 = (s/m)**2
+mu = m / np.sqrt(1+r2) # mean of Y ~ N
+sigma = np.sqrt(np.log(1+r2)) # mean of Y ~ N
+# Y ~ N(mu, sigma^2)
+```
+
+Our lognormal distribution is:
+
+```python
+LN = lognormal(scale=mu, s=sigma)
+
+LN.mean()
+# 5.0
+
+LN.std()
+# 1.0
+```
+
+We can now plot the distribution:
 
 
 ```python
-lognormal_dist = am.Lognormal(5,1)
-print(lognormal_dist)
-
-#     x ~ Lognormal(m=5, s=1)
+plot_dist(LN, n=100)
 ```
 
+![png](docs/figures/output_29_0.png)
 
-Let's plot this distribution.
+
+Now we can use our `lognormal` to generate two data sets,
+
+```python
+x = LN.rvs(size=100)
+y = LN.rvs(size=10)
+```
+
+and plot the area metric between the two:
+
+```python
+_=am.plot_area(x,y,plot_box_edges=False)
+```
+
+![png](docs/figures/area6.png)
+
+
+Let us now compute and plot the area metric between two different lognormal distributions.
+
+```python
+def map_mom_to_par(m,s): return {'scale':m / np.sqrt(1+(s/m)**2), 's':np.sqrt(np.log(1+(s/m)**2))}
+x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=100)
+y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100)
+
+_=am.plot_area(x,y,plot_box_edges=False,xtext=0,dots_size=0.1)
+```
+
+![png](docs/figures/area7.png)
+
+Now we compute the area metric with a large number of samples, and time the result in a Jupyter notebook.
+
+```python
+x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=100_000)
+y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100_000)
+
+am.areaMe(x,y)
+
+# 2.306821838658021
+```
 
 
 ```python
-lognormal_dist.plot(N=100)
+%timeit am.areaMe(x,y)
+
+# 34.1 ms ± 1.37 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 ```
 
 
-![png](fig/output_29_0.png)
-
-
-Now we can use the `Lognormal` distribution to generate two datasets. 
-
-We will use different mean and standard-deviation for the two datasets.
-
-
-```python
-lognormal_dist_1 = am.Lognormal(5,1)
-lognormal_dist_2 = am.Lognormal(7,4)
-```
-
-We can now generate the datasets using the method `sample`. 
-
-We will generate a big number of samples to test the speed of the code.
-
-
-```python
-d1 = am.Dataset(list(lognormal_dist_1.sample(N=100_000)))
-d2 = am.Dataset(list(lognormal_dist_2.sample(N=100_000)))
-```
-
-
-```python
-d1-d2
-
-#     2.319762595668186
-```
-
-Below we time the execution. It takes a small fraction of a second (0.265 s) to compute the distance between two datasets with 1e5 elements. 
-
-
-```python
-%timeit d1-d2
-
-# 265 ms ± 3.95 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-```
-
-
-The plot is done using less samples as accuracy is not a priority.
+<!-- The plot is done using less samples as accuracy is not a priority.
 
 
 ```python
@@ -688,25 +704,26 @@ am.plot(x1.to_list(),x2.to_list())
 x1-x2
 
 # 2.3319029880776765
-```
+``` -->
 
 
 
-We can check that the obtained result coincides exactly with the result from the `scipy` code library. Scipy can thus be used as a test bed.
+We can also check that the obtained result coincides exactly with the result obtained using `scipy`'s wasserstein distance.
 
 
 ```python
 from scipy.stats import wasserstein_distance # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wasserstein_distance.html
-wasserstein_distance(x1,x2)
+wasserstein_distance(x,y)
 
-#     2.331902988077677
+# 2.3068218386580055
 ```
 
 # Bounded area metric
-Sometime the analysis requires the imposition of bounds to the computation of the area metric. For example, we may want to compute the metric up to a certain control value, or compute the metric only for positive or negative values for two given variables that straddles zero. 
+Sometime the analysis requires the imposition of bounds to the computation of the area metric. For example, we may want to compute the metric up to a certain control value, or compute the metric only for positive or negative values for two given variables that straddle zero. 
 
 
 # Speed tests
-* Test speed difference between same-size and different-size datasets.
+* Test speed difference between same-size and different-size data sets.
+* Test speed with increasing size of the data set.
 * Test speed difference against scipy for tabular and non-tabular data.
 * Test speed difference between binary and envelope area metric.
