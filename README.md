@@ -4,6 +4,7 @@
 ![Build Status](https://github.com/marcodeangelis/Stochastic-area-metric/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/marcodeangelis/Stochastic-area-metric/branch/main/graph/badge.svg?token=U5CGV3D7VN)](https://codecov.io/gh/marcodeangelis/Stochastic-area-metric)
 
+
 *stochastic area metric* is a scientific code library written in Python, for computing efficiently the area metric, a.k.a. 1-Wasserstein distance, between tabular samples. The code is optimized by running Numpy under the hood, thus is as vectorized as possible. 
 A basic Matlab version is also present in this repository. 
 
@@ -70,6 +71,7 @@ https://doi.org/10.48550/arXiv.2111.03570
 ---
 
 ## Cite
+=======
 
 > De Angelis M., Sunny J. (2021). *The stochastic area metric*. Github repository. 
 > 
@@ -90,7 +92,6 @@ BibTex:
 }
 ```
 
----
 
 
 # Installation
@@ -165,7 +166,9 @@ There are two recommended ways to import the code.
 import areametric as am
 ```
 
+
 (2) Explicitly import the needed classes and functions: 
+
 
 ```python
 from areametric.areametric import (areaMe)
