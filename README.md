@@ -14,14 +14,14 @@ We especially welcome contributions to extend this code to other scientific lang
 
 >*Disclaimer 1:* While this code has been optimized to deal with large data sizes, it is by no means the most efficient implementation. We always look to improve the efficiency of the code taking advantage of the most recent features of vector programming.
 
->*Disclaimer 2:* The stochastic area metric can be efficiently computed with SciPy using `scipy.stats.wasserstein_distance(x,y)`. So why reinventing the wheel? Our code can compute the area metric between tensors element-wise, i.e. when `x` and `y` have compatible but multiple dimensions. Moreover, we provide code for computing the area metric of a mixture of CDFs, for producing confidence bands, as well as for plotting. 
+>*Disclaimer 2:* The stochastic area metric can be efficiently computed with SciPy using `scipy.stats.wasserstein_distance(x,y)`. So why reinventing the wheel? Our code can compute the area metric between tensors elementwise, i.e. when `x` and `y` have compatible but multiple dimensions. Moreover, we provide code for computing the area metric of a mixture of CDFs, for producing confidence bands, as well as for plotting. 
 
 ## Theory
 
 The stochastic area metric is a **metric** in the very sense of the word. Although it is often referred to as *Wasserstein distance* or *Kantorovich-Rubinstein distance*, it is indeed a metric and coincides with the area between the two cumulative distributions or CDFs (see [1] for more). Despite its popularity has recently peaked with the work of Villani et al. on optimal transport, the metric has been around for longer than generally believed. Some say that the very notion of metric came around with Frechet while attempting to establish a distance between probability distributions. 
 
 ## Use this code:
-* To compute the area between two or multiple 1d cumulative distributions (CDFs) obtained from empirical tabular data. The area metric will be computed element-wise, assuming the first dimension as the *repetitions* dimension.
+* To compute the area between two or multiple 1d cumulative distributions (CDFs) obtained from empirical tabular data. The area metric will be computed elementwise, assuming the first dimension as the *repetitions* dimension.
 
 * To compute the area metric of the envelope of a mixture of cumulative distributions. 
 
@@ -106,7 +106,7 @@ Otherwise:
 
 
 
-> If you don't have a Github account, just click on the code green button <img src="docs/figures/code_green.png" width="35"> at the top of this page, and hit Download. This will zip and download the code in your designated downloads folder.
+> If you don't have a Github account, just click on the code green button <img src="docs/figures/code_green.png" width="35"> at the top of this page and hit Download. This will zip and download the code in your designated downloads folder.
 
 
 Then, open a code editor in the cloned or unzipped downloaded folder. 
@@ -227,7 +227,7 @@ am.plot_area(x[0],x[1],areame=True,grid=True)
 
 For speed comparisons see the speed test section below.
 
-One neat aspect of the area metric is that when it is computed between two samples of size one, it coicides with their absolute-value difference. So for example, 
+One neat aspect of the area metric is that when it is computed between two samples of size one, it coincides with their absolute-value difference. So for example, 
 
 ```python
 x = [1.]
@@ -262,7 +262,7 @@ am.plot_area(x,y)
 
 # Tabular data
 
-Data is often tabular that is, each sample or repetition has a dimension greater than one.  For example, each sample can be a vector, a matrix or a Nd-array. In this section, we show how the area metric can be computed between such data structures.
+Data is often tabular that is, each sample or repetition has a dimension greater than one.  For example, each sample can be a vector, a matrix, or a Nd-array. In this section, we show how the area metric can be computed between such data structures.
 
 
 Let's say that we have collected `12` samples by repeating the experiment `12` times, and that each sample has dimension `5`. This can be simulated as follows: 
@@ -274,18 +274,18 @@ import numpy as np
 X = np.round(np.random.random_sample(size=(12,5))*10000)/100
 print(X)
 
-# [[35.85 26.73 63.47 14.58 15.35]
-#  [34.84 48.21 90.14 79.91 61.55]
-#  [47.1  58.52 80.02 89.55 98.37]
-#  [87.29 57.57 98.42 41.13  9.08]
-#  [31.02 19.95  6.23 88.4  33.04]
-#  [72.35 80.74 78.81 95.42 71.22]
-#  [48.27 90.7   9.66 29.04 35.63]
-#  [92.54 70.71 90.9  22.44 30.58]
-#  [82.46 55.07 99.85 93.94 25.07]
-#  [39.29 21.26 74.35 86.14 82.07]
-#  [69.06 71.84 56.92 73.94 98.34]
-#  [17.86 30.81  1.18 20.74 57.51]]
+X = [[35.85, 26.73, 63.47, 14.58, 15.35],
+     [34.84, 48.21, 90.14, 79.91, 61.55],
+     [47.1,  58.52, 80.02, 89.55, 98.37],
+     [87.29, 57.57, 98.42, 41.13,  9.08],
+     [31.02, 19.95,  6.23, 88.4,  33.04],
+     [72.35, 80.74, 78.81, 95.42, 71.22],
+     [48.27, 90.7,   9.66, 29.04, 35.63],
+     [92.54, 70.71, 90.9,  22.44, 30.58],
+     [82.46, 55.07, 99.85, 93.94, 25.07],
+     [39.29, 21.26, 74.35, 86.14, 82.07],
+     [69.06, 71.84, 56.92, 73.94, 98.34],
+     [17.86, 30.81,  1.18, 20.74, 57.51]]
 
 ```
 
@@ -299,30 +299,30 @@ import numpy as np
 Y = np.round(np.random.random_sample(size=(24,5))*10000)/100
 print(Y)
 
-# [[89.19 11.06 67.77 74.63 82.85]
-#  [80.11 72.08 63.6  59.23 18.11]
-#  [72.08 89.95 88.91 24.99 21.31]
-#  [38.48 51.31 40.5  85.23  4.98]
-#  [90.96 11.49 58.6  72.48 34.11]
-#  [40.16 88.51 74.24 92.48 63.66]
-#  [83.81 28.17 98.57 67.76  5.9 ]
-#  [78.62 26.92 38.36 14.63 73.33]
-#  [44.3  32.97  6.71  3.17 61.81]
-#  [22.38 50.16 70.09 51.27 22.  ]
-#  [81.87 45.66 36.64 36.08 91.76]
-#  [78.39 50.15 11.95 23.67  2.84]
-#  [11.75 48.47 84.58 91.02 62.6 ]
-#  [78.68  8.24 37.94 88.91 21.62]
-#  [53.69 89.26 79.13  1.91  8.86]
-#  [89.88 67.02 46.64 15.49 67.84]
-#  [26.91 87.2  94.37 80.58  8.17]
-#  [44.74 47.86 38.99 68.11 41.09]
-#  [26.01 37.01 82.22 59.35 11.73]
-#  [39.35 28.36 88.42 34.88 82.69]
-#  [16.41 74.31 42.09 85.61 13.67]
-#  [87.77 96.49 33.3  85.3  55.66]
-#  [66.76 84.61 49.56 76.56 11.35]
-#  [ 0.57 23.86 74.69 72.04 94.15]]
+Y = [[89.19, 11.06, 67.77, 74.63, 82.85],
+     [80.11, 72.08, 63.6 , 59.23, 18.11],
+     [72.08, 89.95, 88.91, 24.99, 21.31],
+     [38.48, 51.31, 40.5 , 85.23,  4.98],
+     [90.96, 11.49, 58.6 , 72.48, 34.11],
+     [40.16, 88.51, 74.24, 92.48, 63.66],
+     [83.81, 28.17, 98.57, 67.76,  5.9 ],
+     [78.62, 26.92, 38.36, 14.63, 73.33],
+     [44.3 , 32.97,  6.71,  3.17, 61.81],
+     [22.38, 50.16, 70.09, 51.27, 22.  ],
+     [81.87, 45.66, 36.64, 36.08, 91.76],
+     [78.39, 50.15, 11.95, 23.67,  2.84],
+     [11.75, 48.47, 84.58, 91.02, 62.6 ],
+     [78.68,  8.24, 37.94, 88.91, 21.62],
+     [53.69, 89.26, 79.13,  1.91,  8.86],
+     [89.88, 67.02, 46.64, 15.49, 67.84],
+     [26.91, 87.2 , 94.37, 80.58,  8.17],
+     [44.74, 47.86, 38.99, 68.11, 41.09],
+     [26.01, 37.01, 82.22, 59.35, 11.73],
+     [39.35, 28.36, 88.42, 34.88, 82.69],
+     [16.41, 74.31, 42.09, 85.61, 13.67],
+     [87.77, 96.49, 33.3 , 85.3 , 55.66],
+     [66.76, 84.61, 49.56, 76.56, 11.35],
+     [ 0.57, 23.86, 74.69, 72.04, 94.15]]
 ```
 
 At this point we want to compare these two samples `X` and `Y` and see if there has been any appreciable change. We can compute the area metric right away:
@@ -333,9 +333,9 @@ print(am.areaMe(X,Y))
 
 ```
 
-which will output an ndarray with the area metric between the two samples for each of the `5` dimensions. 
+which will output an `ndarray` with the area metric between the two samples for each of the `5` dimensions. 
 
-This was possible because `X` and `Y` are both compatible *tabular* dataseries, i.e. they are samples with the same dimension. We can use the parser `dataseries` to analyse these two samples: 
+This was possible because `X` and `Y` are both compatible *tabular* data series, i.e. they are samples with the same dimension. We can use the parser `dataseries` to analyse these two samples: 
 
 
 ```python
@@ -349,7 +349,7 @@ print(Y_ds.info)
 # {'class': 'DataSeries', 'rep': 24, 'dim': (5,), 'tabular': True}
 ```
 
-We can also compute the area metric between samples whose dimension has cardinality greated than 1. For example, each sample in the data can be a matrix of dimension 3x2 (cardinality 2):
+We can also compute the area metric between samples whose dimension has cardinality greater than 1. For example, each sample in the data can be a matrix of dimension 3x2 (cardinality 2):
 
 ```python
 X = np.round(np.random.random_sample(size=(7,3,2))*10000)/100
@@ -442,7 +442,7 @@ print(Y_ds.info)
 # {'class': 'DataSeries', 'rep': 13, 'dim': (3, 2), 'tabular': True}
 ```
 
-The area metric between these two tabular dataseries will be a matrix of area-metric values of dimension 3x2:
+The area metric between these two tabular data series will be a matrix of area-metric values of dimension 3x2:
 
 ```python
 print(am.areaMe(X,Y))
@@ -452,11 +452,12 @@ print(am.areaMe(X,Y))
 #  [25.87538462 11.81230769]]
 ```
 
+In summary, when samples are tabular, the area metric will assign the first dimension to a *repetitions* dimension. For example, an array of shape `(13,3,2)` like the one above for `Z`, will be seen as a tabular data set with `13` repetitions and dimension `(3,2)`.
 
 <!-- Given two datasets `x` and `y` the universal parser `dataseries` will cast an array-like numeric data structure into an object called `DataSeries` that the library uses. The parser `dataseries` will make sure that `x` is of numeric type and can be seen as a sample. The first dimension of the array-like structure `x` will be interpreted as the 'repetitions' dimension; the remaining dimensions will constitute the dimension of the sample. -->
 
 # Data mixtures
-A data mixture is a collection of compatible dataseries (same dimension) but carrying different lengths. For example, `X` and `Y` in any of the previous examples are two compatible dataseries with a different number of repetitions. In the last example:
+A data mixture is a collection of compatible data series (same dimension) but carrying different lengths. For example, `X` and `Y` in any of the previous examples are two compatible data series with a different number of repetitions. In the last example:
 
 ```python
 len(X_ds)
@@ -467,7 +468,7 @@ len(Y_ds)
 
 So `X` and `Y` together constitute a *mixtures* of tabular data. 
 
-With mixtures, the computation of the area metric is not confined to a binary operation, i.e. an operation between two dataseries. In fact, we can introduce a third data set: 
+With mixtures, the computation of the area metric is not confined to a binary operation, i.e. an operation between two data series. In fact, we can introduce a third data set: 
 
 ```python
 Z = np.round(np.random.random_sample(size=(11,3,2))*10000)/100
@@ -533,9 +534,9 @@ print(XYZ_m.info)
 # {'class': 'Mixture', 'rep': [7, 13, 11], 'dim': (3, 2), 'len': 3, 'hom': False}
 ```
 
-The resulting mixture will have length 3, as the number of data sets contained in it, and have dimension 3x2. The attribute `hom` that stands for *homogeneous*, will display `True` when the mixture has samples with the same number of repetitions, which is not the case here. An homogeneous data mixture can be dealt with more efficiently, as it can be stored into an `ndarray` and handles as such. 
+The resulting mixture will have length 3, as the number of data sets contained in it, and have dimension 3x2. The attribute `hom` that stands for *homogeneous*, will display `True` when the mixture has samples with the same number of repetitions, which is not the case here. A homogeneous data mixture can be dealt with more efficiently, as it can be stored into an `ndarray` and handles as such. 
 
-Calling the area metric function on a mixture will compute the area between the envelope of CDFs that the mixture induces. So for example, the area metric of the envelope `XYZ_m` is computed as follows:
+Calling the area metric function on a mixture will compute the area between the envelope of CDFs that the mixture induces. So, for example, the area metric of the envelope `XYZ_m` is computed as follows:
 
 ```python
 print(am.areame_mixture(XYZ_m))
@@ -651,10 +652,8 @@ am.areaMe(x,y)
 
 ```python
 %timeit am.areaMe(x,y)
-
-# 34.1 ms ± 1.37 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 ```
-
+> 34.1 ms ± 1.37 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 <!-- The plot is done using less samples as accuracy is not a priority.
 
@@ -702,7 +701,7 @@ x1-x2
 
 
 
-We can also check that the obtained result coincides exactly with the result obtained using `scipy`'s wasserstein distance.
+We can also check that the obtained result coincides exactly with the result obtained using `scipy`'s Wasserstein distance.
 
 
 ```python
@@ -712,12 +711,157 @@ wasserstein_distance(x,y)
 # 2.3068218386580055
 ```
 
+The `scipy` code is limited to data sets of dimension 1. So if we try to compute the Wasserstein distance between `X` and `Y` from the [tabular data](##tabular-data) section, the following error will be thrown:
+
+```python 
+wasserstein_distance(X,Y)
+```
+>---------------------------------------------------------------------------
+>ValueError                                Traceback (most recent call last)
+<ipython-input-6-367f0545cc14> in <module>
+----> 1 wasserstein_distance(X,Y)
+
+> ValueError: object too deep for desired array
+
+
 # Bounded area metric
-Sometime the analysis requires the imposition of bounds to the computation of the area metric. For example, we may want to compute the metric up to a certain control value, or compute the metric only for positive or negative values for two given variables that straddle zero. 
+Sometime the analysis requires the imposition of bounds to the computation of the area metric. For example, we may want to compute the metric up to a certain control value or compute the metric only for positive or negative values for two given variables that straddle zero. 
 
 
 # Speed tests
-* Test speed difference between same-size and different-size data sets.
-* Test speed with increasing size of the data set.
-* Test speed difference against scipy for tabular and non-tabular data.
-* Test speed difference between binary and envelope area metric.
+## Test speed difference between same-size and different-size data sets.
+
+Let's consider the lognormal data seen at section [# Parametric data](#-Parametric-(simulated)-data). 
+
+```python
+x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=10_000)
+y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=10_000)
+y_1 = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=10_001)
+```
+
+```python 
+%timeit am.areaMe(x,y)
+```
+> 3.01 ms ± 19.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+```python 
+%timeit stats.wasserstein_distance(x,y)
+```
+> 3.04 ms ± 40.3 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+```python
+%timeit am.areaMe(x,y_1)
+```
+
+>18.6 s ± 1.94 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+```python
+%timeit stats.wasserstein_distance(x,y_1)
+```
+> 3.16 ms ± 160 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+With data sizes that are a multiple of one another.
+
+```python
+x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=10_000)
+y_1 = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100_000)
+```
+
+The speed difference between `areametric` and `scipy` is quite significant. More profiling of the `aremetric` code is needed to identify the issue. 
+
+```python
+%timeit am.areaMe(x,y_1)
+```
+>28.9 ms ± 1.1 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+```python
+%timeit stats.wasserstein_distance(x,y_1)
+```
+>21.6 ms ± 1.01 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+
+
+## Test speed with increasing size of the data set.
+
+
+
+## Test speed difference against scipy for tabular and non-tabular data.
+
+```python
+x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=100_000)
+y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100_000)
+```
+
+```python 
+%timeit am.areaMe(x,y)
+```
+> 34.7 ms ± 1.3 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+```python
+%timeit stats.wasserstein_distance(x,y)
+```
+
+>44.8 ms ± 3.21 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+For tabular data `scipy` is performs better in both same-size and different-size data. This is understandable, considering the infrastructure behind the `areametric` code. 
+
+For same-size data:
+
+```python
+import time 
+dim=(3,5)
+X = am.example_random_Nd(n=176,dim=dim)
+Y = am.example_random_Nd(n=176,dim=dim)
+
+t0=time.time()
+am.areaMe(X,Y)
+t1=time.time()
+
+print(t1-t0)
+# 0.007700920104980469
+
+
+t0=time.time()
+J=am.map_index_flat_to_array(dim)
+A=np.empty(dim)
+for i in range(np.prod(dim)):
+    j,k = J[i]
+    x, y = X[:,j,k], Y[:,j,k]
+    A[j,k] = stats.wasserstein_distance(x,y)
+t1=time.time()
+
+print(t1-t0)
+# 0.0023310184478759766
+```
+
+And, for different-size data:
+
+```python
+import time 
+dim=(3,5)
+X = am.example_random_Nd(n=81,dim=dim)
+Y = am.example_random_Nd(n=79,dim=dim)
+
+t0=time.time()
+am.areaMe(X,Y)
+t1=time.time()
+
+print(t1-t0)
+# 0.01627206802368164
+
+t0=time.time()
+J=am.map_index_flat_to_array(dim)
+A=np.empty(dim)
+for i in range(np.prod(dim)):
+    j,k = J[i]
+    x, y = X[:,j,k], Y[:,j,k]
+    A[j,k] = stats.wasserstein_distance(x,y)
+t1=time.time()
+
+print(t1-t0)
+# 0.0022368431091308594
+```
+
+## Test speed difference between binary and envelope area metric.
+
+The speed difference between binary and envelope area metric can be tested with a mixture dominated by two CDFs. We can generate such mixtures using Dempster-Shafer theory, (1) seeing the target mixture as a collection of fully ordered intervals; (2) and then produce at random one sample for each interval in the Dempster-Shafer structure. The resulting CDFs will all be contained in the mixture. 
