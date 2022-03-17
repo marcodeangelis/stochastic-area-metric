@@ -1,5 +1,11 @@
 import unittest
 import areametric as am
+import numpy as np
+from scipy.stats import wasserstein_distance
+
+# python3 -m unittest tests/test_areametric.py
+# xattr -w com.dropbox.ignored 1 .venv/
+# https://help.dropbox.com/files-folders/restore-delete/ignored-files
 
 class TestAreaMetric(unittest.TestCase):
     def test_areame_same(self):
@@ -68,6 +74,52 @@ class TestAreaMetric(unittest.TestCase):
         d2= [3,3,3]
         result = am.areaMe(d1,d2)
         self.assertEqual(result, 2)
+
+    def test_areame_different_size2(self):
+        """
+        Test on datasets of different sizes
+        """
+        xx = am.skinny()
+        yy = am.puffy()
+        result = am.areaMe(xx,yy)
+        self.assertAlmostEqual(result[0], 1.26611, places=5)
+        self.assertAlmostEqual(result[1], 1.59278, places=5)
+
+    def test_areame_tabular_2d(self):
+        """
+        Test on tabular data sets
+        """
+        X,Y = am.example_2d()
+        areas = am.areaMe(X,Y)
+        reference_solution = [ 7.00875,  6.38500  , 14.73125,  8.12000   , 11.41875]
+        for a,r in zip(areas,reference_solution):
+            self.assertAlmostEqual(a, r, places=5)
+
+    def test_areame_vs_scipy_2d(self):
+        dim = (3,5)
+        X = am.example_random_Nd(n=79,dim=dim)
+        Y = am.example_random_Nd(n=79,dim=dim)
+        areas = am.areaMe(X,Y)
+        J=am.map_index_flat_to_array(dim)
+        for i in range(np.prod(dim)):
+            j,k = J[i]
+            x, y = X[:,j,k], Y[:,j,k]
+            a_scipy = wasserstein_distance(x,y)
+            self.assertAlmostEqual(areas[j,k], a_scipy, places=5)
+
+    def test_areame_vs_scipy_3d(self):
+        dim = (3,7,4)
+        X = am.example_random_Nd(n=179,dim=dim)
+        Y = am.example_random_Nd(n=179,dim=dim)
+        areas = am.areaMe(X,Y)
+        J=am.map_index_flat_to_array(dim)
+        for i in range(np.prod(dim)):
+            j,k,l = J[i]
+            x, y = X[:,j,k,l], Y[:,j,k,l]
+            a_scipy = wasserstein_distance(x,y)
+            self.assertAlmostEqual(areas[j,k,l], a_scipy, places=5)
+
+
 
     # def test_areame_different_size1(self):
     #     """
