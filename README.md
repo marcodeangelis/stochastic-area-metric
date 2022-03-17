@@ -735,6 +735,12 @@ Sometime the analysis requires the imposition of bounds to the computation of th
 Let's consider the lognormal data seen at section [# Parametric data](#-Parametric-(simulated)-data). 
 
 ```python
+import numpy as np
+import scipy.stats as stats
+def map_mom_to_par(m,s): return {'scale':m / np.sqrt(1+(s/m)**2), 's':np.sqrt(np.log(1+(s/m)**2))}
+```
+
+```python
 x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=10_000)
 y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=10_000)
 y_1 = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=10_001)
@@ -743,23 +749,41 @@ y_1 = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=10_001)
 ```python 
 %timeit am.areaMe(x,y)
 ```
-> 3.01 ms ± 19.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+> 3.65 ms ± 58.7 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 ```python 
 %timeit stats.wasserstein_distance(x,y)
 ```
-> 3.04 ms ± 40.3 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+> 5.18 ms ± 718 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 ```python
 %timeit am.areaMe(x,y_1)
 ```
 
->18.6 s ± 1.94 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+>5.32 ms ± 674 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 ```python
 %timeit stats.wasserstein_distance(x,y_1)
 ```
-> 3.16 ms ± 160 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+> 5.31 ms ± 543 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+```python
+x = stats.lognorm(**map_mom_to_par(5,1)).rvs(size=100_000)
+y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100_000)
+y_1 = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100_001)
+```
+
+```python
+%timeit am.areaMe(x,y_1)
+```
+
+>66.5 ms ± 3.49 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+```python
+%timeit stats.wasserstein_distance(x,y_1)
+```
+> 68 ms ± 2.42 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
 
 With data sizes that are a multiple of one another.
 
@@ -773,12 +797,12 @@ The speed difference between `areametric` and `scipy` is quite significant. More
 ```python
 %timeit am.areaMe(x,y_1)
 ```
->28.9 ms ± 1.1 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+>37 ms ± 2.61 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 ```python
 %timeit stats.wasserstein_distance(x,y_1)
 ```
->21.6 ms ± 1.01 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+>37 ms ± 1.64 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 
 
@@ -819,7 +843,7 @@ am.areaMe(X,Y)
 t1=time.time()
 
 print(t1-t0)
-# 0.007700920104980469
+# 0.007700920104980469 seconds
 
 
 t0=time.time()
@@ -832,7 +856,7 @@ for i in range(np.prod(dim)):
 t1=time.time()
 
 print(t1-t0)
-# 0.0023310184478759766
+# 0.0023310184478759766 seconds
 ```
 
 And, for different-size data:
@@ -848,7 +872,7 @@ am.areaMe(X,Y)
 t1=time.time()
 
 print(t1-t0)
-# 0.01627206802368164
+# 0.00299930572509 seconds
 
 t0=time.time()
 J=am.map_index_flat_to_array(dim)
@@ -860,9 +884,9 @@ for i in range(np.prod(dim)):
 t1=time.time()
 
 print(t1-t0)
-# 0.0022368431091308594
+# 0.002000093460083008 seconds
 ```
 
 ## Test speed difference between binary and envelope area metric.
 
-The speed difference between binary and envelope area metric can be tested with a mixture dominated by two CDFs. We can generate such mixtures using Dempster-Shafer theory, (1) seeing the target mixture as a collection of fully ordered intervals; (2) and then produce at random one sample for each interval in the Dempster-Shafer structure. The resulting CDFs will all be contained in the mixture. 
+The speed difference between binary and envelope area metric can be tested with a mixture of two dominating bounding CDFs. We can generate such mixtures using Dempster-Shafer theory, (1) seeing the target mixture as a collection of fully ordered intervals; (2) and then produce at random one sample for each interval in the Dempster-Shafer structure. The resulting CDFs will all be contained in the mixture. 
