@@ -143,8 +143,8 @@ def areame_mixture_inneralgorithm(x,one_sorted_values):
     '''
     iqx_r = inverse_quantile_mixture(x,one_sorted_values,side='right') # inverse quantile value for each sample in the mixture.
     uu = diff(one_sorted_values,) # steps width
-    vv = abs(numpy.max(iqx_r,axis=0) - numpy.min(iqx_r,axis=0)) # steps height
-    return numpy.sum((uu*vv[:-1]),axis=0) # sum all area chunks and terminate # transpose to allow broadcasting of multiplication
+    vv = abs(np.max(iqx_r,axis=0) - numpy.min(iqx_r,axis=0)) # steps height
+    return np.sum((uu*vv[:-1]),axis=0) # sum all area chunks and terminate # transpose to allow broadcasting of multiplication
 
 def permute_first_and_last(x:ndarray):
     shape_x = x.shape
