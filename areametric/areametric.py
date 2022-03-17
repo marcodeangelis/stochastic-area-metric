@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import Union
 from matplotlib.pyplot import axis
 
-import numpy
+import numpy as np
 
 from numpy import (ndarray, concatenate, linspace, diff, argmax, argmin, arange, transpose, prod, empty)
 
@@ -66,13 +66,21 @@ def areame_algorithm(x_: ndarray, y_: ndarray) -> float: # inputs lists of doubl
     n1, n2 = len(x), len(y)
     n = n1 if n1>n2 else n2
     qx, qy = quantile_function(x), quantile_function(y)
-    iqx, iqy = inverse_quantile_function(x,side='right'), inverse_quantile_function(y,side='right')
+    # iqx, iqy = inverse_quantile_function(x,side='right'), inverse_quantile_function(y,side='right')
     if ((n1<n2) & (n2%n1!=0)) | ((n2<n1) & (n1%n2!=0)): # slow branch terminates in context
-        xy = x + y # concatenate the two dataseries # sort happens here again
-        xysv = xy.value_sorted # get data after sorting
-        v = abs(iqx(xysv) - iqy(xysv)) # steps height
-        u = diff(xysv) # steps width
-        return sum(u*v[:-1]) # sum all area chunks and terminate
+        x_value = x.value
+        y_value = y.value
+        xysv = concatenate((x_value,y_value))
+        xysv.sort()
+        uu = diff(xysv) # steps width
+        xv_inverse_quantile = x_value[x.index].searchsorted(xysv[:-1], 'right')/n1 # https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html
+        yv_inverse_quantile = y_value[y.index].searchsorted(xysv[:-1], 'right')/n2 # https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html
+        return np.sum(np.multiply(np.abs(xv_inverse_quantile - yv_inverse_quantile), uu))
+        # xy = x + y # concatenate the two dataseries # sort happens here again
+        # xysv = xy.value_sorted # get data after sorting
+        # v = abs(iqx(xysv) - iqy(xysv)) # steps height
+        # u = diff(xysv) # steps width
+        # return sum(u*v[:-1]) # sum all area chunks and terminate
     elif (n2>n1) & (n2%n1==0): p = ecdf_p(y)
     elif (n1==n2) | ((n1>n2) & (n1%n2==0)): p = ecdf_p(x)
     p_= concatenate(([0.],p)) 
