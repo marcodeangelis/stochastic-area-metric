@@ -20,6 +20,10 @@ We especially welcome contributions to extend this code to other scientific lang
 
 The stochastic area metric is a **metric** in the very sense of the word. Although it is often referred to as *Wasserstein distance* or *Kantorovich-Rubinstein distance*, it is indeed a metric and coincides with the area between the two cumulative distributions or CDFs (see [1] for more). Despite its popularity has recently peaked with the work of Villani et al. on optimal transport, the metric has been around for longer than generally believed. Some say that the very notion of metric came around with Frechet while attempting to establish a distance between probability distributions. 
 
+## Applications in engineering
+
+The stochastic area metric has been recently applied in engineering for model validation [2,3,4], model calibration [5,6], and model ranking [7]. For more about model validation is reader is referred to the DAWS/SANDIA report. See [References](##-References) below.
+
 ## Use this code:
 * To compute the area between two or multiple 1d cumulative distributions (CDFs) obtained from empirical tabular data. The area metric will be computed elementwise, assuming the first dimension as the *repetitions* dimension.
 
@@ -36,14 +40,11 @@ The stochastic area metric is a **metric** in the very sense of the word. Althou
 ## Future extensions
 * Extend the 1d area metric to comparing bivariate or even multivariate empirical cumulative distributions.
 
-
-## Applications in engineering
-
-The stochastic area metric has been recently applied in engineering for model validation [2,3,4], model calibration [5,6], and model ranking [7]. For more about model validation is reader is referred to the DAWS/SANDIA report.
-
 ## Acknowledgements
 Thanks to Scott Ferson, Ander Gray, Enrique Miralles-Dolz and Dominic Calleja. 
 
+## Contact
+You can reach us at `mda@liverpool.ac.uk`.
 
 ## References
 
