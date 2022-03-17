@@ -119,7 +119,15 @@ class TestAreaMetric(unittest.TestCase):
             a_scipy = wasserstein_distance(x,y)
             self.assertAlmostEqual(areas[j,k,l], a_scipy, places=5)
 
-
+    def test_areame_mixtures_1d(self):
+        dim = (7,)
+        X = am.example_random_Nd(n=179,dim=dim)
+        Y = am.example_random_Nd(n=179,dim=dim)
+        areas = am.areaMe(X,Y)
+        XY_m = am.mixture((X,Y))
+        area_mix = am.areame_mixture(XY_m)
+        for a,a_mix in zip(areas,area_mix):
+            self.assertAlmostEqual(a, a_mix, places=5)
 
     # def test_areame_different_size1(self):
     #     """
