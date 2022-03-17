@@ -78,21 +78,21 @@ class TestAreaMetric(unittest.TestCase):
     #     result = am.areaMe(d1,d2)
     #     self.assertEqual(result, 2)
 
-class TestDataset(unittest.TestCase):
-    def test_dataset_length(self):
-        d = [1,2,3,4,5,6]
-        l = len(d)
-        dataset = am.Dataset(d)
-        self.assertEqual(l,len(dataset))
-    def test_dataset_add(self):
-        d1= [1,2,3,4,5,6]
-        d2= [7,8]
-        d = d1+d2
-        dataset = am.Dataset(d)
-        dataset1 = am.Dataset(d1)
-        dataset2 = am.Dataset(d2)
-        dataset12 = dataset1+dataset2
-        self.assertEqual(dataset12,dataset)
+# class TestDataset(unittest.TestCase):
+#     def test_dataset_length(self):
+#         d = [1,2,3,4,5,6]
+#         l = len(d)
+#         dataset = am.Dataset(d)
+#         self.assertEqual(l,len(dataset))
+#     def test_dataset_add(self):
+#         d1= [1,2,3,4,5,6]
+#         d2= [7,8]
+#         d = d1+d2
+#         dataset = am.Dataset(d)
+#         dataset1 = am.Dataset(d1)
+#         dataset2 = am.Dataset(d2)
+#         dataset12 = dataset1+dataset2
+#         self.assertEqual(dataset12,dataset)
 
 if __name__ == '__main__':
     unittest.main()
