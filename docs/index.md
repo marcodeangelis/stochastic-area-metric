@@ -717,13 +717,15 @@ The `scipy` code is limited to data sets of dimension 1. So if we try to compute
 ```python 
 wasserstein_distance(X,Y)
 ```
->---------------------------------------------------------------------------
->ValueError                                Traceback (most recent call last)
+
+```python
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
 <ipython-input-6-367f0545cc14> in <module>
 ----> 1 wasserstein_distance(X,Y)
 
-> ValueError: object too deep for desired array
-
+ValueError: object too deep for desired array
+```
 
 # Bounded area metric
 Sometime the analysis requires the imposition of bounds to the computation of the area metric. For example, we may want to compute the metric up to a certain control value or compute the metric only for positive or negative values for two given variables that straddle zero. 
