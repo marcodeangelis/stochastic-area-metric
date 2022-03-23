@@ -107,7 +107,7 @@ Otherwise:
 
 
 
-> If you don't have a Github account, just click on the code green button <img src="docs/figures/code_green.png" width="35"> at the top of this page and hit Download. This will zip and download the code in your designated downloads folder.
+> If you don't have a Github account, just click on the code green button <img src="./figures/code_green.png" width="35"> at the top of this page and hit Download. This will zip and download the code in your designated downloads folder.
 
 
 Then, open a code editor in the cloned or unzipped downloaded folder. 
@@ -198,7 +198,7 @@ We can plot the results using:
 ```python
 am.plot_area(x,y,areame=True,grid=True)
 ```
-![png](docs/figures/area1.png)
+![png](./figures/area1.png)
 
 We can also output the individual chunks of area in each pocket between the two ECDFs as follows:
 
@@ -224,7 +224,7 @@ print(am.areaMe(x,y))
 am.plot_area(x[0],x[1],areame=True,grid=True)
 ```
 
-![png](docs/figures/area2.png)
+![png](./figures/area2.png)
 
 For speed comparisons see the speed test section below.
 
@@ -240,7 +240,7 @@ print(am.areaMe(x,y))
 am.plot_area(x,y)
 ```
 
-![png](docs/figures/area3.png)
+![png](./figures/area3.png)
 
 
 The value of the area metric can be visually checked in this simple example:
@@ -254,7 +254,7 @@ am.plot_area(x,y)
 
 ```
 
-![png](docs/figures/area4.png)
+![png](./figures/area4.png)
 
 
 
@@ -555,7 +555,7 @@ XYZ_m_00 = am.mixture_given_dimension_index(XYZ_m,(0,0))
 _=am.plot_mixture_area(XYZ_m_00,grid=False)
 ```
 
-![png](docs/figures/area5.png)
+![png](./figures/area5.png)
 
 
 
@@ -608,7 +608,7 @@ We can now plot the distribution:
 plot_dist(LN, n=100)
 ```
 
-![png](docs/figures/output_29_0.png)
+![png](./figures/output_29_0.png)
 
 
 Now we can use our `lognormal` to generate two data sets,
@@ -624,7 +624,7 @@ and plot the area metric between the two:
 _=am.plot_area(x,y,plot_box_edges=False)
 ```
 
-![png](docs/figures/area6.png)
+![png](./figures/area6.png)
 
 
 Let us now compute and plot the area metric between two different lognormal distributions.
@@ -637,7 +637,7 @@ y = stats.lognorm(**map_mom_to_par(7,4)).rvs(size=100)
 _=am.plot_area(x,y,plot_box_edges=False,xtext=0,dots_size=0.1)
 ```
 
-![png](docs/figures/area7.png)
+![png](./figures/area7.png)
 
 Now we compute the area metric with a large number of samples, and time the result in a Jupyter notebook.
 
