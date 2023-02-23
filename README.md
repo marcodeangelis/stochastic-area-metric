@@ -459,8 +459,8 @@ In summary, when samples are tabular, the area metric will assign the first dime
 
 <!-- Given two datasets `x` and `y` the universal parser `dataseries` will cast an array-like numeric data structure into an object called `DataSeries` that the library uses. The parser `dataseries` will make sure that `x` is of numeric type and can be seen as a sample. The first dimension of the array-like structure `x` will be interpreted as the 'repetitions' dimension; the remaining dimensions will constitute the dimension of the sample. -->
 
-# Data mixtures
-A data mixture is a collection of compatible data series (same dimension) but carrying different lengths. For example, `X` and `Y` in any of the previous examples are two compatible data series with a different number of repetitions. In the last example:
+# Unbalanced data 
+A data set is unbalanced if it is a collection of compatible data series (same dimension) carrying different lengths. For example, `X` and `Y` in any of the previous examples are two compatible data series with a different number of repetitions. In the last example:
 
 ```python
 len(X_ds)
@@ -469,9 +469,9 @@ len(Y_ds)
 # 13
 ```
 
-So `X` and `Y` together constitute a *mixtures* of tabular data. 
+So `X` and `Y` together constitute an unbalanced tabular data set. 
 
-With mixtures, the computation of the area metric is not confined to a binary operation, i.e. an operation between two data series. In fact, we can introduce a third data set: 
+With unbalanced data, the computation of the area metric is not confined to a binary operation, i.e. an operation between two data series. In fact, we can introduce a third data set: 
 
 ```python
 Z = np.round(np.random.random_sample(size=(11,3,2))*10000)/100
@@ -529,7 +529,7 @@ Z = [[[14.38, 17.08],
 ```
 
 
-and then create a mixture collecting `X`, `Y` and `Z` in a single instance as follows.
+and then create an unbalanced data set collecting `X`, `Y` and `Z` in a single instance as follows.
 
 ```python
 XYZ_m = am.mixture((X,Y,Z))
@@ -537,9 +537,9 @@ print(XYZ_m.info)
 # {'class': 'Mixture', 'rep': [7, 13, 11], 'dim': (3, 2), 'len': 3, 'hom': False}
 ```
 
-The resulting mixture will have length 3, as the number of data sets contained in it, and have dimension 3x2. The attribute `hom` that stands for *homogeneous*, will display `True` when the mixture has samples with the same number of repetitions, which is not the case here. A homogeneous data mixture can be dealt with more efficiently, as it can be stored into an `ndarray` and handles as such. 
+The resulting unbalanced data will have length 3, as the number of data sets contained in it, and have dimension 3x2. The attribute `hom` that stands for *homogeneous*, will display `True` when the mixture has samples with the same number of repetitions, which is not the case here. A homogeneous unbalanced data set can be dealt with more efficiently, as it can be stored into an `ndarray` and handles as such. 
 
-Calling the area metric function on a mixture will compute the area between the envelope of CDFs that the mixture induces. So, for example, the area metric of the envelope `XYZ_m` is computed as follows:
+Calling the area metric function on an unbalanced data will compute the area between the envelope of CDFs. So, for example, the area metric of the envelope `XYZ_m` is computed as follows:
 
 ```python
 print(am.areame_mixture(XYZ_m))
