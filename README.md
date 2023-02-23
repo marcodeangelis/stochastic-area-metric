@@ -18,7 +18,7 @@ We especially welcome contributions to extend this code to other scientific lang
 
 ## Theory
 
-The stochastic area metric is a **metric** in the very sense of the word. Although it is often referred to as *Wasserstein distance* or *Kantorovich-Rubinstein distance*, it is indeed a metric and coincides with the area between the two cumulative distributions or CDFs (see [1] for more). Despite its popularity has recently peaked with the work of Villani et al. on optimal transport, the metric has been around for longer than generally believed. Some say that the very notion of metric came around with Frechet while attempting to establish a distance between probability distributions. 
+The stochastic area metric is a **metric** in the mathematical sense of the word. Although it is often referred to as *Wasserstein distance* or *Kantorovich-Rubinstein distance*, it is indeed a metric and coincides with the area between the two cumulative distributions or CDFs (see [1] for more). Despite its popularity has recently peaked with the work of Villani et al. on optimal transport, the metric has been around for longer than generally believed. Some say that the very notion of metric came around with Frechet while attempting to establish a distance between probability distributions. 
 
 ## Applications in engineering
 
@@ -31,11 +31,13 @@ The stochastic area metric has been recently applied in engineering for model va
 
 * To plot the area between the cumulative distributions.
 
-* To compute the absolute value of the difference of two random variables `X` and `Y`, that is `|X-Y|` under perfect dependence. 
+* To compute the minimum expectation of absolute difference of two random variables `X` and `Y`, that is `|X-Y|`, under all dependency models. 
 
-## Unanswered questions
+## Research questions
 
-* Can the absolute value of the difference of two random variables `X` and `Y`, that is `|X-Y|`, be computed under no dependency statement?
+The maximum expectation of `|X-Y|` under all dependency models is attained for the W copula. There is no dependency model that can give a greater expectation, so effectively this maximum provide an upper bound on E[|X-Y|]. 
+
+Can this upper bound be considered a metric?
 
 ## Future extensions
 * Extend the 1d area metric to comparing bivariate or even multivariate empirical cumulative distributions.
@@ -44,7 +46,7 @@ The stochastic area metric has been recently applied in engineering for model va
 Thanks to Scott Ferson, Ander Gray, Enrique Miralles-Dolz and Dominic Calleja. 
 
 ## Contact
-You can reach us at `mda@liverpool.ac.uk`.
+Shoot me an email `marco.de-angelis@strath.ac.uk`, or submit an issue here.
 
 ## References
 
