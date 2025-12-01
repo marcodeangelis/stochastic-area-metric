@@ -1,9 +1,9 @@
-# Welcome!
+# Stochastic Area Metric
+https://github.com/marcodeangelis/stochastic-area-metric/
 
-[![DOI](https://zenodo.org/badge/326476924.svg)](https://zenodo.org/badge/latestdoi/326476924)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6366288.svg)](https://doi.org/10.5281/zenodo.6366288)
 ![Build Status](https://github.com/marcodeangelis/Stochastic-area-metric/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/marcodeangelis/Stochastic-area-metric/branch/main/graph/badge.svg?token=U5CGV3D7VN)](https://codecov.io/gh/marcodeangelis/Stochastic-area-metric)
-
 
 *stochastic area metric* is a scientific code library written in Python, for computing efficiently the area metric, a.k.a. 1-Wasserstein distance, between tabular samples. The code is optimized by running Numpy under the hood, thus is as vectorized as possible. 
 A basic Matlab version is also present in this repository. 
@@ -28,9 +28,7 @@ The stochastic area metric has been recently applied in engineering for model va
 * To compute the area between two or multiple 1d cumulative distributions (CDFs) obtained from empirical tabular data. The area metric will be computed elementwise, assuming the first dimension as the *repetitions* dimension.
 
 * To compute the area metric of the envelope of a mixture of cumulative distributions. 
-
 * To plot the area between the cumulative distributions.
-
 * To compute the minimum expectation of absolute difference of two random variables `X` and `Y`, that is `|X-Y|`, under all dependency models. 
 
 ## Research questions
@@ -39,35 +37,36 @@ The maximum expectation of `|X-Y|` under all dependency models is attained for t
 
 Can this upper bound be considered a metric?
 
-## Future extensions
+## Future work
+* Use this code to efficiently compute the distance between two p-boxes.
 * Extend the 1d area metric to comparing bivariate or even multivariate empirical cumulative distributions.
 
 ## Acknowledgements
 Thanks to Scott Ferson, Ander Gray, Enrique Miralles-Dolz and Dominic Calleja. 
 
 ## Contact
-Shoot me an email `marco.de-angelis@strath.ac.uk`, or submit an issue here.
+`marco.de-angelis@strath.ac.uk`
 
 ## References
 
-[1] de Angelis, M. and Gray, A., 2021. Why the 1-Wasserstein distance is the area between the two marginal CDFs. *arXiv preprint arXiv:2111.03570*. 
+de Angelis, M. and Gray, A., 2021. Why the 1-Wasserstein distance is the area between the two marginal CDFs. *arXiv preprint arXiv:2111.03570*. 
 https://doi.org/10.48550/arXiv.2111.03570 
 
-[2] Ferson, S. and Oberkampf, W.L., 2009. Validation of imprecise probability models. *International Journal of Reliability and Safety*, 3(1-3), pp.3-22.
+Ferson, S. and Oberkampf, W.L., 2009. Validation of imprecise probability models. *International Journal of Reliability and Safety*, 3(1-3), pp.3-22.
 
-[3] Ferson, S., Oberkampf, W.L. and Ginzburg, L., 2008. Model validation and predictive capability for the thermal challenge problem. *Computer Methods in Applied Mechanics and Engineering, 197(29-32)*, pp.2408-2430.
+Ferson, S., Oberkampf, W.L. and Ginzburg, L., 2008. Model validation and predictive capability for the thermal challenge problem. *Computer Methods in Applied Mechanics and Engineering, 197(29-32)*, pp.2408-2430.
 
-[4] Oberkampf, W.L. and Ferson, S., 2007. *Model Validation Under Both Aleatory and Epistemic Uncertainty* (No. SAND2007-7163C). Sandia National Lab.(SNL-NM), Albuquerque, NM (United States).
+Oberkampf, W.L. and Ferson, S., 2007. *Model Validation Under Both Aleatory and Epistemic Uncertainty* (No. SAND2007-7163C). Sandia National Lab.(SNL-NM), Albuquerque, NM (United States).
 
-[5] Gray, A., Wimbush, A., de Angelis, M., Hristov, P.O., Calleja, D., Miralles-Dolz, E. and Rocchetta, R., 2022. From inference to design: A comprehensive framework for uncertainty quantification in engineering with limited information. *Mechanical Systems and Signal Processing*, 165, p.108210. https://doi.org/10.1016/j.ymssp.2021.108210
+Gray, A., Wimbush, A., de Angelis, M., Hristov, P.O., Calleja, D., Miralles-Dolz, E. and Rocchetta, R., 2022. From inference to design: A comprehensive framework for uncertainty quantification in engineering with limited information. *Mechanical Systems and Signal Processing*, 165, p.108210. https://doi.org/10.1016/j.ymssp.2021.108210
 
-[6] Gray, A., Wimbush, A., de Angelis, M., Hristov, P.O., Miralles-Dolz, E., Calleja, D. and Rocchetta, R., 2020. Bayesian calibration and probability bounds analysis solution to the Nasa 2020 UQ challenge on optimization under uncertainty. In *30th European Safety and Reliability Conference, ESREL 2020 and 15th Probabilistic Safety Assessment and Management Conference, PSAM 2020* (pp. 1111-1118). Research Publishing Services.
+Gray, A., Wimbush, A., de Angelis, M., Hristov, P.O., Miralles-Dolz, E., Calleja, D. and Rocchetta, R., 2020. Bayesian calibration and probability bounds analysis solution to the Nasa 2020 UQ challenge on optimization under uncertainty. In *30th European Safety and Reliability Conference, ESREL 2020 and 15th Probabilistic Safety Assessment and Management Conference, PSAM 2020* (pp. 1111-1118). Research Publishing Services.
 
-[7] Sunny, J., de Angelis, M. and Edwards, B., 2022. Ranking and Selection of Earthquake Ground‐Motion Models Using the Stochastic Area Metric. *Seismological Society of America*, 93(2A), pp.787-797. https://doi.org/10.1785/0220210216
+Sunny, J., de Angelis, M. and Edwards, B., 2022. Ranking and Selection of Earthquake Ground‐Motion Models Using the Stochastic Area Metric. *Seismological Society of America*, 93(2A), pp.787-797. https://doi.org/10.1785/0220210216
 
-[8] https://en.wikipedia.org/wiki/Wasserstein_metric
+https://en.wikipedia.org/wiki/Wasserstein_metric
 
-[9] https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wasserstein_distance.html
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wasserstein_distance.html
 
 
 
@@ -75,28 +74,28 @@ https://doi.org/10.48550/arXiv.2111.03570
 
 ## Cite
 
-> De Angelis M., Sunny J. (2021). *The stochastic area metric*. Github repository. 
-> 
-> https://github.com/marcodeangelis/stochastic-area-metric/ 
-> 
-> doi: https://doi.org/10.5281/zenodo.4419644
+> de Angelis, M., & Sunny, J. (2022). Stochastic area metric (v0.3). Zenodo. 
+> [doi: ttps://doi.org/10.5281/zenodo.6366288](https://doi.org/10.5281/zenodo.6366288)
+ 
 
 BibTex:
 
 ``` bibtex
-@misc{DS2021,
-  author = {De Angelis, M., Sunny, J.},
-  title = {Stochastic area metric},
-  year = {2021},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  doi = {10.5281/zenodo.4419645},
+@software{de_angelis_2022_6366288,
+  author       = {de Angelis, Marco and Sunny, Jaleena},
+  title        = {Stochastic area metric},
+  month        = mar,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {v0.3},
+  doi          = {10.5281/zenodo.6366288},
+  url          = {https://doi.org/10.5281/zenodo.6366288},
 }
 ```
 
 
 
-# Installation
+# Install
 First, download or clone this repository on your local machine.
 
 If you don't have Github ssh keys (you may have to enter your github password) use:
@@ -116,13 +115,14 @@ Then, open a code editor in the cloned or unzipped downloaded folder.
 
 ## Integration 
 
-To use this code in your Python project, just copy the folder `areametric` in your workspace. In fact, all the (Python) code is contained in this folder; look no further! Once the `areametric` is in your workspace, it will be seen as a Python package, so you can simply import the code using: 
+To use this code in your Python project, just copy the folder `areametric` in your workspace. All the code is contained in this folder. Once the folder `areametric` is in your workspace, it will be seen as a Python package, so you can simply import the code using: 
 
 ```python
 import areametric as am
 ```
 
-and use the dot notation to access the name space. See more about this at the [import code](##-Importing-the-code) section.
+and use the dot notation to access the namespace. See more about this at the [import code](##-Importing-the-code) section.
+
 
 ## Dependencies
 
@@ -133,6 +133,7 @@ numpy>=1.22
 ```
 
 We recommend installing also `matplotlib` for plotting. 
+
 
 ### Virtual environment
 
@@ -153,14 +154,14 @@ $ source myenv/bin/activate
 
 # Stochastic area metric
 
-Let's see the code in action. 
+Here are some examples.
 
 
 ## Importing the code
 
 There are two recommended ways to import the code. 
 
-(1) Make use of the default importer, which can be invoked as follows:
+(1) Make use of the default importer:
 
 ```python
 import areametric as am
@@ -176,8 +177,6 @@ from areametric.dataseries import (dataseries,mixture)
 from areametric.methods import (ecdf, quantile_function, inverse_quantile_function)
 from areametric.plotting import (plot_area, plot_ecdf)
 ```
-
-In what follows we'll be using the importer as in (1).
 
 ## Basic use
 
@@ -268,7 +267,7 @@ am.plot_area(x,y)
 Data is often tabular that is, each sample or repetition has a dimension greater than one.  For example, each sample can be a vector, a matrix, or a Nd-array. In this section, we show how the area metric can be computed between such data structures.
 
 
-Let's say that we have collected `12` samples by repeating the experiment `12` times, and that each sample has dimension `5`. This can be simulated as follows: 
+Let's say that we have collected `12` samples by repeating an experiment `12` times, and that each sample has dimension `5`. This can be simulated as follows: 
 
 
 ```python
@@ -566,8 +565,6 @@ _=am.plot_mixture_area(XYZ_m_00,grid=False)
 # Parametric (simulated) data
 
 Parametric data is data obtained sampling at random from a parametric probability distribution such as the lognormal distribution.
-
-
 
 For example, let us define a lognormal distribution in terms of first and second moment. We will use the library `scipy.stats` to perform this task. 
 
